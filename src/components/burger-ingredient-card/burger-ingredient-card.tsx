@@ -6,13 +6,15 @@ import styles from './burger-ingredient-card.module.css';
 
 type TBurgerIngredientCardProps = {
   ingredient: TIngredient;
+  onClick?: () => void;
 };
 
 export const BurgerIngredientCard = ({
   ingredient,
+  onClick,
 }: TBurgerIngredientCardProps): React.JSX.Element => {
   return (
-    <div className={styles.card}>
+    <div className={styles.card} onClick={onClick}>
       <div className={styles.counter}>
         <Counter count={1} size="default" extraClass="m-1" />
       </div>
