@@ -4,4 +4,33 @@
   width: 600px;
   padding-bottom: 20px;
   color: var(--text-primary-color);
+  gap: 40px;
+
+}
+
+.constructor_elements {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--text-primary-color) var(--background-color);
+}
+
+.price {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.constructor_element {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.price_container {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
 }
