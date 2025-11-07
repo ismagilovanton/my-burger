@@ -22,25 +22,23 @@ export const BurgerConstructor = ({
     <section className={`${styles.burger_constructor} mt-5 mb-12`}>
       <div className={`${styles.constructor_elements} pl-4 pr-4`}>
         {ingredients.map((ingredient, index) => (
-          <>
-            <div className={styles.constructor_element}>
-              <DragIcon type="primary" />
-              <ConstructorElement
-                type={
-                  index === 0
-                    ? 'top'
-                    : index === ingredients.length - 1
-                      ? 'bottom'
-                      : undefined
-                }
-                key={ingredient._id}
-                isLocked={true}
-                text={ingredient.name}
-                price={ingredient.price}
-                thumbnail={ingredient.image}
-              />
-            </div>
-          </>
+          <div className={styles.constructor_element} key={ingredient._id}>
+            <DragIcon type="primary" />
+            <ConstructorElement
+              type={
+                index === 0
+                  ? 'top'
+                  : index === ingredients.length - 1
+                    ? 'bottom'
+                    : undefined
+              }
+              key={ingredient._id}
+              isLocked={true}
+              text={ingredient.name}
+              price={ingredient.price}
+              thumbnail={ingredient.image}
+            />
+          </div>
         ))}
       </div>
       <div className={`${styles.price_container} mb-15 pr-4 pl-4`}>
