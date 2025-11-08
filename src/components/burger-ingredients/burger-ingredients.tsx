@@ -1,5 +1,5 @@
 import { Tab } from '@krgaa/react-developer-burger-ui-components';
-import { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import { IngredientDetails } from '@components/ingredient-details/ingredient-details';
 import { Modal } from '@components/modal/modal';
@@ -30,9 +30,16 @@ export const BurgerIngredients = ({
   const [activeTab, setActiveTab] = useState<TActiveTab>('bun');
   const [selectedIngredient, setSelectedIngredient] = useState<TIngredient | null>(null);
 
-  const filterIngredients = (type: TActiveTab): TIngredient[] => {
-    return ingredients.filter((ingredient) => ingredient.type === type);
-  };
+  const groupedIngredients = useMemo(() => {
+    return ingredients.reduce(
+      (acc, ingredient) => {
+        const key = ingredient.type as TActiveTab;
+        (acc[key] ??= []).push(ingredient);
+        return acc;
+      },
+      {} as Partial<Record<TActiveTab, TIngredient[]>>
+    );
+  }, [ingredients]);
 
   return (
     <>
@@ -62,14 +69,22 @@ export const BurgerIngredients = ({
             </Tab>
           </ul>
         </nav>
-        <p className="text text_type_main-medium">{activeTabLabels[activeTab]}</p>
-        <div className={`${styles.burger_ingredients_list} pt-6 pb-10 pl-4 pr-4`}>
-          {filterIngredients(activeTab).map((ingredient) => (
-            <BurgerIngredientCard
-              key={ingredient._id}
-              ingredient={ingredient}
-              onClick={() => setSelectedIngredient(ingredient)}
-            />
+        <div className={styles.burger_ingredients_list}>
+          {Object.entries(groupedIngredients).map(([sectionKey, items]) => (
+            <React.Fragment key={sectionKey}>
+              <p className="text text_type_main-medium">
+                {activeTabLabels[sectionKey as TActiveTab] ?? sectionKey}
+              </p>
+              <div className={`${styles.burger_ingredients_grid} pt-6 pb-10 pl-4 pr-4`}>
+                {items?.map((ingredient) => (
+                  <BurgerIngredientCard
+                    key={ingredient._id}
+                    ingredient={ingredient}
+                    onClick={() => setSelectedIngredient(ingredient)}
+                  />
+                ))}
+              </div>
+            </React.Fragment>
           ))}
         </div>
       </section>
