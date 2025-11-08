@@ -4,7 +4,7 @@ import {
   CurrencyIcon,
   DragIcon,
 } from '@krgaa/react-developer-burger-ui-components';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Modal } from '@components/modal/modal';
 import { OrderDetails } from '@components/order-details/order-details';
@@ -22,28 +22,62 @@ export const BurgerConstructor = ({
 }: TBurgerConstructorProps): React.JSX.Element => {
   const [isOrderModalOpen, setIsOrderModalOpen] = useState<boolean>(false);
 
+  const bun = ingredients.find((item) => item.type === 'bun');
+  const [currentFillings, setCurrentFillings] = useState<TIngredient[]>(
+    ingredients.filter((item) => item.type !== 'bun')
+  );
+
+  useEffect((): void => {
+    setCurrentFillings(ingredients.filter((item) => item.type !== 'bun'));
+  }, [ingredients]);
+
+  const handleRemoveFilling = (id: string): void => {
+    setCurrentFillings((prev) => prev.filter((item) => item._id !== id));
+  };
+
   return (
     <section className={`${styles.burger_constructor} mt-5 mb-12`}>
-      <div className={`${styles.constructor_elements} pl-4 pr-4`}>
-        {ingredients.map((ingredient, index) => (
-          <div className={styles.constructor_element} key={ingredient._id}>
-            <DragIcon type="primary" />
+      <div className={`${styles.constructor_elements} `}>
+        {bun && (
+          <div className={`${styles.constructor_element} pl-4 pr-4`}>
             <ConstructorElement
-              type={
-                index === 0
-                  ? 'top'
-                  : index === ingredients.length - 1
-                    ? 'bottom'
-                    : undefined
-              }
-              key={ingredient._id}
+              type="top"
               isLocked={true}
-              text={ingredient.name}
-              price={ingredient.price}
-              thumbnail={ingredient.image}
+              text={`${bun.name} (верх)`}
+              price={bun.price}
+              thumbnail={bun.image}
             />
           </div>
-        ))}
+        )}
+
+        <div className={styles.constructor_fillings}>
+          {currentFillings.map((ingredient: TIngredient) => (
+            <div
+              className={`${styles.constructor_element} pl-4 pr-4`}
+              key={ingredient._id}
+            >
+              <DragIcon type="primary" />
+              <ConstructorElement
+                text={ingredient.name}
+                price={ingredient.price}
+                thumbnail={ingredient.image}
+                handleClose={() => handleRemoveFilling(ingredient._id)}
+              />
+            </div>
+          ))}
+        </div>
+
+        {bun && (
+          <div className={`${styles.constructor_element} pl-4 pr-4`}>
+            <ConstructorElement
+              type="bottom"
+              isLocked={true}
+              text={`${bun.name} (низ)`}
+              price={bun.price}
+              thumbnail={bun.image}
+            />
+          </div>
+        )}
       </div>
       <div className={`${styles.price_container} mb-15 pr-4 pl-4`}>
         <div className={`${styles.price} mr-10`}>
