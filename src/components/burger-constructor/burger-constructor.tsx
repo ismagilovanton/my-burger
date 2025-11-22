@@ -1,10 +1,13 @@
+import { removeBurgerConstructorItem } from '@/features/burger-constructor/burgerConstructorSlice';
+import { createOrder } from '@/features/order/orderSlice';
+import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import {
   Button,
   ConstructorElement,
   CurrencyIcon,
   DragIcon,
 } from '@krgaa/react-developer-burger-ui-components';
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { Modal } from '@components/modal/modal';
 import { OrderDetails } from '@components/order-details/order-details';
@@ -13,31 +16,39 @@ import type { TIngredient } from '@utils/types';
 
 import styles from './burger-constructor.module.css';
 
-type TBurgerConstructorProps = {
-  ingredients: TIngredient[];
-};
-
-export const BurgerConstructor = ({
-  ingredients,
-}: TBurgerConstructorProps): React.JSX.Element => {
+export const BurgerConstructor = (): React.JSX.Element => {
+  const dispatch = useAppDispatch();
+  const burgerConstructorItems = useAppSelector(
+    (state) => state.burgerConstructor.items
+  );
+  const orderNumber: string = useAppSelector(
+    (state) => state.order.order?.orderNumber ?? '-----'
+  );
   const [isOrderModalOpen, setIsOrderModalOpen] = useState<boolean>(false);
 
-  const bun = ingredients.find((item) => item.type === 'bun');
-  const [currentFillings, setCurrentFillings] = useState<TIngredient[]>(
-    ingredients.filter((item) => item.type !== 'bun')
+  const bun: TIngredient | undefined = useMemo(
+    () => burgerConstructorItems.find((item) => item.type === 'bun'),
+    [burgerConstructorItems]
+  );
+  const currentFillings: TIngredient[] = useMemo(
+    () => burgerConstructorItems.filter((item) => item.type !== 'bun'),
+    [burgerConstructorItems]
   );
 
-  useEffect((): void => {
-    setCurrentFillings(ingredients.filter((item) => item.type !== 'bun'));
-  }, [ingredients]);
-
   const handleRemoveFilling = (id: string): void => {
-    setCurrentFillings((prev) => prev.filter((item) => item._id !== id));
+    dispatch(removeBurgerConstructorItem(id));
+  };
+
+  const handleCreateOrder = (): void => {
+    const ingredientIds: string[] = burgerConstructorItems.map((i) => i._id);
+    void dispatch(createOrder(ingredientIds));
+    setIsOrderModalOpen(true);
   };
 
   return (
     <section className={`${styles.burger_constructor} mt-5 mb-12`}>
       <div className={`${styles.constructor_elements} `}>
+        {JSON.stringify(burgerConstructorItems)}
         {bun && (
           <div className={`${styles.constructor_element} pl-4 pr-4`}>
             <ConstructorElement
@@ -88,14 +99,14 @@ export const BurgerConstructor = ({
           htmlType="button"
           type="primary"
           size="large"
-          onClick={() => setIsOrderModalOpen(true)}
+          onClick={handleCreateOrder}
         >
           Оформить заказ
         </Button>
       </div>
       {isOrderModalOpen && (
         <Modal onClose={() => setIsOrderModalOpen(false)}>
-          <OrderDetails orderNumber="034536" />
+          <OrderDetails orderNumber={orderNumber} />
         </Modal>
       )}
     </section>
