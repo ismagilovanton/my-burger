@@ -1,4 +1,7 @@
-import { removeBurgerConstructorItem } from '@/features/burger-constructor/burgerConstructorSlice';
+import {
+  addBurgerConstructorItem,
+  removeBurgerConstructorItem,
+} from '@/features/burger-constructor/burgerConstructorSlice';
 import { createOrder } from '@/features/order/orderSlice';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import {
@@ -8,6 +11,7 @@ import {
   DragIcon,
 } from '@krgaa/react-developer-burger-ui-components';
 import { useMemo, useState } from 'react';
+import { useDrop } from 'react-dnd';
 
 import { Modal } from '@components/modal/modal';
 import { OrderDetails } from '@components/order-details/order-details';
@@ -25,6 +29,14 @@ export const BurgerConstructor = (): React.JSX.Element => {
     (state) => state.order.order?.orderNumber ?? '-----'
   );
   const [isOrderModalOpen, setIsOrderModalOpen] = useState<boolean>(false);
+
+  const [, dropRef] = useDrop<{ ingredient: TIngredient }, void, unknown>(() => ({
+    accept: 'INGREDIENT',
+    drop: (item: { ingredient: TIngredient }): void => {
+      const ingredient = item.ingredient;
+      dispatch(addBurgerConstructorItem(ingredient));
+    },
+  }));
 
   const bun: TIngredient | undefined = useMemo(
     () => burgerConstructorItems.find((item) => item.type === 'bun'),
@@ -46,9 +58,13 @@ export const BurgerConstructor = (): React.JSX.Element => {
   };
 
   return (
-    <section className={`${styles.burger_constructor} mt-5 mb-12`}>
+    <section
+      className={`${styles.burger_constructor} mt-5 mb-12`}
+      ref={(node) => {
+        dropRef(node);
+      }}
+    >
       <div className={`${styles.constructor_elements} `}>
-        {JSON.stringify(burgerConstructorItems)}
         {bun && (
           <div className={`${styles.constructor_element} pl-4 pr-4`}>
             <ConstructorElement
@@ -92,7 +108,10 @@ export const BurgerConstructor = (): React.JSX.Element => {
       </div>
       <div className={`${styles.price_container} mb-15 pr-4 pl-4`}>
         <div className={`${styles.price} mr-10`}>
-          <p className="text text_type_digits-medium">1000</p>
+          <p className="text text_type_digits-medium">
+            {(bun ? bun.price * 2 : 0) +
+              currentFillings.reduce((sum, it) => sum + it.price, 0)}
+          </p>
           <CurrencyIcon type="primary" />
         </div>
         <Button

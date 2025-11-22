@@ -19,10 +19,21 @@ const burgerConstructorSlice = createSlice({
       state.items = action.payload;
     },
     addBurgerConstructorItem: (state, action: PayloadAction<TIngredient>) => {
-      state.items.push(action.payload);
+      const ingredient = action.payload;
+      if (ingredient.type === 'bun') {
+        // Заменяем существующую булку, если есть
+        state.items = state.items.filter((item) => item.type !== 'bun');
+        state.items.push(ingredient);
+      } else {
+        state.items.push(ingredient);
+      }
     },
     removeBurgerConstructorItem: (state, action: PayloadAction<string>) => {
-      state.items = state.items.filter((item) => item._id !== action.payload);
+      // Удаляем только один экземпляр по _id (первый найденный)
+      const index = state.items.findIndex((item) => item._id === action.payload);
+      if (index !== -1) {
+        state.items.splice(index, 1);
+      }
     },
     clearBurgerConstructor: (state) => {
       state.items = [];

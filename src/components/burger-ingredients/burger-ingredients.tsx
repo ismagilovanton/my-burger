@@ -60,6 +60,20 @@ export const BurgerIngredients = (): React.JSX.Element => {
       Boolean(groupedIngredients[key]?.length)
     );
 
+  const countsById = useAppSelector((state) => {
+    const map = new Map<string, number>();
+    const items = state.burgerConstructor.items;
+    for (const it of items) {
+      if (it.type === 'bun') continue;
+      map.set(it._id, (map.get(it._id) ?? 0) + 1);
+    }
+    const bun = items.find((i) => i.type === 'bun');
+    if (bun) {
+      map.set(bun._id, 2);
+    }
+    return map;
+  });
+
   return (
     <>
       <section className={styles.burger_ingredients}>
@@ -104,6 +118,7 @@ export const BurgerIngredients = (): React.JSX.Element => {
                   <BurgerIngredientCard
                     key={ingredient._id}
                     ingredient={ingredient}
+                    count={countsById.get(ingredient._id) ?? 0}
                     onClick={() => dispatch(setCurrentIngredient(ingredient))}
                   />
                 ))}
