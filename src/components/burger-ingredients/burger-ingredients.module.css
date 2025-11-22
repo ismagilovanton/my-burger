@@ -6,10 +6,26 @@
   font-family: 'Jet Brains Mono', serif;
 }
 
+.burger_ingredients_list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--text-primary-color) var(--background-color);
+}
+
+.burger_ingredients_grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(auto-fill, minmax(196px, 1fr));
+  gap: 24px;
+  align-items: center;
+}
+
 .menu {
   display: flex;
-  margin: 0;
-  padding: 0;
   text-align: center;
+  padding: 0px;
   list-style-type: none;
 }

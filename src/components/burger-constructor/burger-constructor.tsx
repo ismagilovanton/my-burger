@@ -1,3 +1,14 @@
+import {
+  Button,
+  ConstructorElement,
+  CurrencyIcon,
+  DragIcon,
+} from '@krgaa/react-developer-burger-ui-components';
+import { useEffect, useState } from 'react';
+
+import { Modal } from '@components/modal/modal';
+import { OrderDetails } from '@components/order-details/order-details';
+
 import type { TIngredient } from '@utils/types';
 
 import styles from './burger-constructor.module.css';
@@ -9,7 +20,84 @@ type TBurgerConstructorProps = {
 export const BurgerConstructor = ({
   ingredients,
 }: TBurgerConstructorProps): React.JSX.Element => {
-  console.log(ingredients);
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState<boolean>(false);
 
-  return <section className={styles.burger_constructor}></section>;
+  const bun = ingredients.find((item) => item.type === 'bun');
+  const [currentFillings, setCurrentFillings] = useState<TIngredient[]>(
+    ingredients.filter((item) => item.type !== 'bun')
+  );
+
+  useEffect((): void => {
+    setCurrentFillings(ingredients.filter((item) => item.type !== 'bun'));
+  }, [ingredients]);
+
+  const handleRemoveFilling = (id: string): void => {
+    setCurrentFillings((prev) => prev.filter((item) => item._id !== id));
+  };
+
+  return (
+    <section className={`${styles.burger_constructor} mt-5 mb-12`}>
+      <div className={`${styles.constructor_elements} `}>
+        {bun && (
+          <div className={`${styles.constructor_element} pl-4 pr-4`}>
+            <ConstructorElement
+              type="top"
+              isLocked={true}
+              text={`${bun.name} (верх)`}
+              price={bun.price}
+              thumbnail={bun.image}
+            />
+          </div>
+        )}
+
+        <div className={styles.constructor_fillings}>
+          {currentFillings.map((ingredient: TIngredient) => (
+            <div
+              className={`${styles.constructor_element} pl-4 pr-4`}
+              key={ingredient._id}
+            >
+              <DragIcon type="primary" />
+              <ConstructorElement
+                text={ingredient.name}
+                price={ingredient.price}
+                thumbnail={ingredient.image}
+                handleClose={() => handleRemoveFilling(ingredient._id)}
+              />
+            </div>
+          ))}
+        </div>
+
+        {bun && (
+          <div className={`${styles.constructor_element} pl-4 pr-4`}>
+            <ConstructorElement
+              type="bottom"
+              isLocked={true}
+              text={`${bun.name} (низ)`}
+              price={bun.price}
+              thumbnail={bun.image}
+            />
+          </div>
+        )}
+      </div>
+      <div className={`${styles.price_container} mb-15 pr-4 pl-4`}>
+        <div className={`${styles.price} mr-10`}>
+          <p className="text text_type_digits-medium">1000</p>
+          <CurrencyIcon type="primary" />
+        </div>
+        <Button
+          htmlType="button"
+          type="primary"
+          size="large"
+          onClick={() => setIsOrderModalOpen(true)}
+        >
+          Оформить заказ
+        </Button>
+      </div>
+      {isOrderModalOpen && (
+        <Modal onClose={() => setIsOrderModalOpen(false)}>
+          <OrderDetails orderNumber="034536" />
+        </Modal>
+      )}
+    </section>
+  );
 };

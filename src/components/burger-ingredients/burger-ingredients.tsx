@@ -1,4 +1,10 @@
 import { Tab } from '@krgaa/react-developer-burger-ui-components';
+import React, { useMemo, useState } from 'react';
+
+import { IngredientDetails } from '@components/ingredient-details/ingredient-details';
+import { Modal } from '@components/modal/modal';
+
+import { BurgerIngredientCard } from '../burger-ingredient-card/burger-ingredient-card';
 
 import type { TIngredient } from '@utils/types';
 
@@ -8,44 +14,85 @@ type TBurgerIngredientsProps = {
   ingredients: TIngredient[];
 };
 
+type TActiveTab = 'bun' | 'main' | 'sauce';
+
+const activeTabLabels: Record<TActiveTab, string> = {
+  bun: 'Булки',
+  main: 'Начинки',
+  sauce: 'Соусы',
+};
+
 export const BurgerIngredients = ({
   ingredients,
 }: TBurgerIngredientsProps): React.JSX.Element => {
   console.log(ingredients);
 
+  const [activeTab, setActiveTab] = useState<TActiveTab>('bun');
+  const [selectedIngredient, setSelectedIngredient] = useState<TIngredient | null>(null);
+
+  const groupedIngredients = useMemo(() => {
+    return ingredients.reduce(
+      (acc, ingredient) => {
+        const key = ingredient.type as TActiveTab;
+        (acc[key] ??= []).push(ingredient);
+        return acc;
+      },
+      {} as Partial<Record<TActiveTab, TIngredient[]>>
+    );
+  }, [ingredients]);
+
   return (
-    <section className={styles.burger_ingredients}>
-      <nav>
-        <ul className={styles.menu}>
-          <Tab
-            value="bun"
-            active={true}
-            onClick={() => {
-              /* TODO */
-            }}
-          >
-            Булки
-          </Tab>
-          <Tab
-            value="main"
-            active={false}
-            onClick={() => {
-              /* TODO */
-            }}
-          >
-            Начинки
-          </Tab>
-          <Tab
-            value="sauce"
-            active={false}
-            onClick={() => {
-              /* TODO */
-            }}
-          >
-            Соусы
-          </Tab>
-        </ul>
-      </nav>
-    </section>
+    <>
+      <section className={styles.burger_ingredients}>
+        <nav>
+          <ul className={`${styles.menu} mb-10 mt-5`}>
+            <Tab
+              value="bun"
+              active={activeTab === 'bun'}
+              onClick={() => setActiveTab('bun')}
+            >
+              Булки
+            </Tab>
+            <Tab
+              value="main"
+              active={activeTab === 'main'}
+              onClick={() => setActiveTab('main')}
+            >
+              Начинки
+            </Tab>
+            <Tab
+              value="sauce"
+              active={activeTab === 'sauce'}
+              onClick={() => setActiveTab('sauce')}
+            >
+              Соусы
+            </Tab>
+          </ul>
+        </nav>
+        <div className={styles.burger_ingredients_list}>
+          {Object.entries(groupedIngredients).map(([sectionKey, items]) => (
+            <React.Fragment key={sectionKey}>
+              <p className="text text_type_main-medium">
+                {activeTabLabels[sectionKey as TActiveTab] ?? sectionKey}
+              </p>
+              <div className={`${styles.burger_ingredients_grid} pt-6 pb-10 pl-4 pr-4`}>
+                {items?.map((ingredient) => (
+                  <BurgerIngredientCard
+                    key={ingredient._id}
+                    ingredient={ingredient}
+                    onClick={() => setSelectedIngredient(ingredient)}
+                  />
+                ))}
+              </div>
+            </React.Fragment>
+          ))}
+        </div>
+      </section>
+      {selectedIngredient && (
+        <Modal title="Детали ингредиента" onClose={() => setSelectedIngredient(null)}>
+          <IngredientDetails ingredient={selectedIngredient} />
+        </Modal>
+      )}
+    </>
   );
 };
