@@ -4,6 +4,7 @@ import {
 } from '@/features/current-ingredient/currentIngredientSlice';
 import { fetchIngredients } from '@/features/ingredients/ingredientsSlice';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
+import { useScrollActiveTab } from '@/hooks/useScrollActiveTab';
 import { Tab } from '@krgaa/react-developer-burger-ui-components';
 import React, { useEffect, useMemo } from 'react';
 
@@ -54,6 +55,11 @@ export const BurgerIngredients = (): React.JSX.Element => {
     );
   }, [ingredients]);
 
+  const { containerRef, registerHeader, activeTab, setActiveTab } =
+    useScrollActiveTab<TActiveTab>(sectionKeys, (key) =>
+      Boolean(groupedIngredients[key]?.length)
+    );
+
   return (
     <>
       <section className={styles.burger_ingredients}>
@@ -84,10 +90,13 @@ export const BurgerIngredients = (): React.JSX.Element => {
             </Tab>
           </ul>
         </nav>
-        <div className={styles.burger_ingredients_list}>
+        <div className={styles.burger_ingredients_list} ref={containerRef}>
           {Object.entries(groupedIngredients).map(([sectionKey, items]) => (
             <React.Fragment key={sectionKey}>
-              <p className="text text_type_main-medium">
+              <p
+                className="text text_type_main-medium"
+                ref={registerHeader(sectionKey as TActiveTab)}
+              >
                 {activeTabLabels[sectionKey as TActiveTab] ?? sectionKey}
               </p>
               <div className={`${styles.burger_ingredients_grid} pt-6 pb-10 pl-4 pr-4`}>
