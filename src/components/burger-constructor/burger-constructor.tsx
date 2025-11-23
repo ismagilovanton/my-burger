@@ -57,6 +57,15 @@ export const BurgerConstructor = (): React.JSX.Element => {
     setIsOrderModalOpen(true);
   };
 
+  const totalPrice: number = useMemo(
+    () =>
+      (bun ? bun.price * 2 : 0) +
+      currentFillings.reduce((sum: number, ingredient: TIngredient) => {
+        return sum + ingredient.price;
+      }, 0),
+    [bun, currentFillings]
+  );
+
   return (
     <section
       className={`${styles.burger_constructor} mt-5 mb-12`}
@@ -108,10 +117,7 @@ export const BurgerConstructor = (): React.JSX.Element => {
       </div>
       <div className={`${styles.price_container} mb-15 pr-4 pl-4`}>
         <div className={`${styles.price} mr-10`}>
-          <p className="text text_type_digits-medium">
-            {(bun ? bun.price * 2 : 0) +
-              currentFillings.reduce((sum, it) => sum + it.price, 0)}
-          </p>
+          <p className="text text_type_digits-medium">{totalPrice}</p>
           <CurrencyIcon type="primary" />
         </div>
         <Button
