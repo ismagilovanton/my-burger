@@ -14,7 +14,6 @@ import {
 } from '@krgaa/react-developer-burger-ui-components';
 import { useMemo, useState, useRef } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
-import { v4 as uuidv4 } from 'uuid';
 
 import { Modal } from '@components/modal/modal';
 import { OrderDetails } from '@components/order-details/order-details';
@@ -37,11 +36,7 @@ export const BurgerConstructor = (): React.JSX.Element => {
     accept: 'INGREDIENT',
     drop: (item: { ingredient: TIngredient }): void => {
       const ingredient = item.ingredient;
-      const ingredientWithId: TBurgerConstructorItem = {
-        ...ingredient,
-        uniqueId: uuidv4(),
-      };
-      dispatch(addBurgerConstructorItem(ingredientWithId));
+      dispatch(addBurgerConstructorItem(ingredient));
     },
   }));
 

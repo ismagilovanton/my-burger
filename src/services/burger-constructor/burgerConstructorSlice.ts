@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { v4 as uuidv4 } from 'uuid';
 
 import type { TIngredient } from '@/utils/types';
 import type { PayloadAction } from '@reduxjs/toolkit';
@@ -25,15 +26,19 @@ const burgerConstructorSlice = createSlice({
     ) => {
       state.items = action.payload;
     },
-    addBurgerConstructorItem: (state, action: PayloadAction<TBurgerConstructorItem>) => {
-      const ingredient = action.payload;
-      if (ingredient.type === 'bun') {
-        // Заменяем существующую булку, если есть
-        state.items = state.items.filter((item) => item.type !== 'bun');
-        state.items.push(ingredient);
-      } else {
-        state.items.push(ingredient);
-      }
+    addBurgerConstructorItem: {
+      reducer: (state, action: PayloadAction<TBurgerConstructorItem>) => {
+        const ingredient = action.payload;
+        if (ingredient.type === 'bun') {
+          state.items = state.items.filter((item) => item.type !== 'bun');
+          state.items.push(ingredient);
+        } else {
+          state.items.push(ingredient);
+        }
+      },
+      prepare: (ingredient: TIngredient) => {
+        return { payload: { ...ingredient, uniqueId: uuidv4() } };
+      },
     },
     removeBurgerConstructorItem: (state, action: PayloadAction<string>) => {
       const index = state.items.findIndex((item) => item.uniqueId === action.payload);
