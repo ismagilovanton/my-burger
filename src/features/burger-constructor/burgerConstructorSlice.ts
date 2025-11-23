@@ -35,6 +35,23 @@ const burgerConstructorSlice = createSlice({
         state.items.splice(index, 1);
       }
     },
+    moveBurgerConstructorItem: (
+      state,
+      action: PayloadAction<{ fromIndex: number; toIndex: number }>
+    ) => {
+      const { fromIndex, toIndex } = action.payload;
+      if (
+        fromIndex === toIndex ||
+        fromIndex < 0 ||
+        toIndex < 0 ||
+        fromIndex >= state.items.length ||
+        toIndex >= state.items.length
+      ) {
+        return;
+      }
+      const [movedItem] = state.items.splice(fromIndex, 1);
+      state.items.splice(toIndex, 0, movedItem);
+    },
     clearBurgerConstructor: (state) => {
       state.items = [];
     },
@@ -45,6 +62,7 @@ export const {
   setBurgerConstructorItems,
   addBurgerConstructorItem,
   removeBurgerConstructorItem,
+  moveBurgerConstructorItem,
   clearBurgerConstructor,
 } = burgerConstructorSlice.actions;
 export const burgerConstructorReducer = burgerConstructorSlice.reducer;

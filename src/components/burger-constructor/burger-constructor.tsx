@@ -1,5 +1,6 @@
 import {
   addBurgerConstructorItem,
+  moveBurgerConstructorItem,
   removeBurgerConstructorItem,
 } from '@/features/burger-constructor/burgerConstructorSlice';
 import { createOrder } from '@/features/order/orderSlice';
@@ -10,8 +11,8 @@ import {
   CurrencyIcon,
   DragIcon,
 } from '@krgaa/react-developer-burger-ui-components';
-import { useMemo, useState } from 'react';
-import { useDrop } from 'react-dnd';
+import { useMemo, useState, useRef } from 'react';
+import { useDrag, useDrop } from 'react-dnd';
 
 import { Modal } from '@components/modal/modal';
 import { OrderDetails } from '@components/order-details/order-details';
@@ -46,6 +47,10 @@ export const BurgerConstructor = (): React.JSX.Element => {
     () => burgerConstructorItems.filter((item) => item.type !== 'bun'),
     [burgerConstructorItems]
   );
+
+  const handleMoveFilling = (fromIndex: number, toIndex: number): void => {
+    dispatch(moveBurgerConstructorItem({ fromIndex, toIndex }));
+  };
 
   const handleRemoveFilling = (id: string): void => {
     dispatch(removeBurgerConstructorItem(id));
@@ -87,20 +92,18 @@ export const BurgerConstructor = (): React.JSX.Element => {
         )}
 
         <div className={styles.constructor_fillings}>
-          {currentFillings.map((ingredient: TIngredient) => (
-            <div
-              className={`${styles.constructor_element} pl-4 pr-4`}
-              key={ingredient._id}
-            >
-              <DragIcon type="primary" />
-              <ConstructorElement
-                text={ingredient.name}
-                price={ingredient.price}
-                thumbnail={ingredient.image}
-                handleClose={() => handleRemoveFilling(ingredient._id)}
+          {currentFillings.map((ingredient: TIngredient) => {
+            const index = burgerConstructorItems.indexOf(ingredient);
+            return (
+              <ConstructorFilling
+                key={ingredient._id}
+                ingredient={ingredient}
+                index={index}
+                onMove={handleMoveFilling}
+                onRemove={handleRemoveFilling}
               />
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {bun && (
@@ -135,5 +138,90 @@ export const BurgerConstructor = (): React.JSX.Element => {
         </Modal>
       )}
     </section>
+  );
+};
+
+type TConstructorFillingProps = {
+  ingredient: TIngredient;
+  index: number;
+  onMove: (fromIndex: number, toIndex: number) => void;
+  onRemove: (id: string) => void;
+};
+
+type TDragItem = {
+  index: number;
+  type: 'CONSTRUCTOR_INGREDIENT';
+};
+
+const ConstructorFilling = ({
+  ingredient,
+  index,
+  onMove,
+  onRemove,
+}: TConstructorFillingProps): React.JSX.Element => {
+  const ref = useRef<HTMLDivElement | null>(null);
+
+  const [, dropRef] = useDrop<TDragItem>({
+    accept: 'CONSTRUCTOR_INGREDIENT',
+    hover(item, monitor) {
+      if (!ref.current) {
+        return;
+      }
+      const dragIndex = item.index;
+      const hoverIndex = index;
+
+      if (dragIndex === hoverIndex) {
+        return;
+      }
+
+      const hoverBoundingRect = ref.current.getBoundingClientRect();
+      const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+
+      const clientOffset = monitor.getClientOffset();
+      if (!clientOffset) {
+        return;
+      }
+
+      const hoverClientY = clientOffset.y - hoverBoundingRect.top;
+
+      if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
+        return;
+      }
+
+      if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
+        return;
+      }
+
+      onMove(dragIndex, hoverIndex);
+      item.index = hoverIndex;
+    },
+  });
+
+  const [{ isDragging }, dragRef] = useDrag<TDragItem, void, { isDragging: boolean }>({
+    type: 'CONSTRUCTOR_INGREDIENT',
+    item: { index, type: 'CONSTRUCTOR_INGREDIENT' },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  });
+
+  dragRef(dropRef(ref));
+
+  const opacity = isDragging ? 0.3 : 1;
+
+  return (
+    <div
+      ref={ref}
+      className={`${styles.constructor_element} pl-4 pr-4`}
+      style={{ opacity }}
+    >
+      <DragIcon type="primary" />
+      <ConstructorElement
+        text={ingredient.name}
+        price={ingredient.price}
+        thumbnail={ingredient.image}
+        handleClose={() => onRemove(ingredient._id)}
+      />
+    </div>
   );
 };
