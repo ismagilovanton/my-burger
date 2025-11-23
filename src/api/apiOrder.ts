@@ -1,4 +1,5 @@
 import { API_URL } from '@/constants/api';
+import { handleResponse } from '@/helpers/apiErrorHandler';
 
 type TCreateOrderResponse = {
   success: boolean;
@@ -17,12 +18,11 @@ export const apiOrder = {
       },
       body: JSON.stringify({ ingredients: ingredientIds }),
     });
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(errorText || 'Failed to create order');
-    }
-    const data = (await response.json()) as TCreateOrderResponse;
-    if (!data.success || !data.order?.number) {
+    const data = await handleResponse<TCreateOrderResponse>(
+      response,
+      'Failed to create order'
+    );
+    if (!data.order?.number) {
       throw new Error('Invalid order response');
     }
     return String(data.order.number);
