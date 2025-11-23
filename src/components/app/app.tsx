@@ -16,10 +16,8 @@ export const App = (): React.JSX.Element => {
       </h1>
       <main className={`${styles.main} pl-5 pr-5`}>
         <DndProvider backend={HTML5Backend}>
-          <>
-            <BurgerIngredients />
-            <BurgerConstructor />
-          </>
+          <BurgerIngredients />
+          <BurgerConstructor />
         </DndProvider>
       </main>
     </div>
