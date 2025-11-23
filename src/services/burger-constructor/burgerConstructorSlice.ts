@@ -3,8 +3,12 @@ import { createSlice } from '@reduxjs/toolkit';
 import type { TIngredient } from '@/utils/types';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
+export type TBurgerConstructorItem = TIngredient & {
+  uniqueId: string;
+};
+
 type TBurgerConstructorState = {
-  items: TIngredient[];
+  items: TBurgerConstructorItem[];
 };
 
 const initialState: TBurgerConstructorState = {
@@ -15,10 +19,13 @@ const burgerConstructorSlice = createSlice({
   name: 'burgerConstructor',
   initialState,
   reducers: {
-    setBurgerConstructorItems: (state, action: PayloadAction<TIngredient[]>) => {
+    setBurgerConstructorItems: (
+      state,
+      action: PayloadAction<TBurgerConstructorItem[]>
+    ) => {
       state.items = action.payload;
     },
-    addBurgerConstructorItem: (state, action: PayloadAction<TIngredient>) => {
+    addBurgerConstructorItem: (state, action: PayloadAction<TBurgerConstructorItem>) => {
       const ingredient = action.payload;
       if (ingredient.type === 'bun') {
         // Заменяем существующую булку, если есть
@@ -29,8 +36,7 @@ const burgerConstructorSlice = createSlice({
       }
     },
     removeBurgerConstructorItem: (state, action: PayloadAction<string>) => {
-      // Удаляем только один экземпляр по _id (первый найденный)
-      const index = state.items.findIndex((item) => item._id === action.payload);
+      const index = state.items.findIndex((item) => item.uniqueId === action.payload);
       if (index !== -1) {
         state.items.splice(index, 1);
       }

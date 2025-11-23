@@ -3,6 +3,7 @@ import {
   addBurgerConstructorItem,
   moveBurgerConstructorItem,
   removeBurgerConstructorItem,
+  type TBurgerConstructorItem,
 } from '@/services/burger-constructor/burgerConstructorSlice';
 import { createOrder } from '@/services/order/orderSlice';
 import {
@@ -13,6 +14,7 @@ import {
 } from '@krgaa/react-developer-burger-ui-components';
 import { useMemo, useState, useRef } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
+import { v4 as uuidv4 } from 'uuid';
 
 import { Modal } from '@components/modal/modal';
 import { OrderDetails } from '@components/order-details/order-details';
@@ -35,15 +37,19 @@ export const BurgerConstructor = (): React.JSX.Element => {
     accept: 'INGREDIENT',
     drop: (item: { ingredient: TIngredient }): void => {
       const ingredient = item.ingredient;
-      dispatch(addBurgerConstructorItem(ingredient));
+      const ingredientWithId: TBurgerConstructorItem = {
+        ...ingredient,
+        uniqueId: uuidv4(),
+      };
+      dispatch(addBurgerConstructorItem(ingredientWithId));
     },
   }));
 
-  const bun: TIngredient | undefined = useMemo(
+  const bun: TBurgerConstructorItem | undefined = useMemo(
     () => burgerConstructorItems.find((item) => item.type === 'bun'),
     [burgerConstructorItems]
   );
-  const currentFillings: TIngredient[] = useMemo(
+  const currentFillings: TBurgerConstructorItem[] = useMemo(
     () => burgerConstructorItems.filter((item) => item.type !== 'bun'),
     [burgerConstructorItems]
   );
@@ -52,8 +58,8 @@ export const BurgerConstructor = (): React.JSX.Element => {
     dispatch(moveBurgerConstructorItem({ fromIndex, toIndex }));
   };
 
-  const handleRemoveFilling = (id: string): void => {
-    dispatch(removeBurgerConstructorItem(id));
+  const handleRemoveFilling = (uniqueId: string): void => {
+    dispatch(removeBurgerConstructorItem(uniqueId));
   };
 
   const handleCreateOrder = (): void => {
@@ -92,11 +98,11 @@ export const BurgerConstructor = (): React.JSX.Element => {
         )}
 
         <div className={styles.constructor_fillings}>
-          {currentFillings.map((ingredient: TIngredient) => {
+          {currentFillings.map((ingredient) => {
             const index = burgerConstructorItems.indexOf(ingredient);
             return (
               <ConstructorFilling
-                key={ingredient._id}
+                key={ingredient.uniqueId}
                 ingredient={ingredient}
                 index={index}
                 onMove={handleMoveFilling}
@@ -142,10 +148,10 @@ export const BurgerConstructor = (): React.JSX.Element => {
 };
 
 type TConstructorFillingProps = {
-  ingredient: TIngredient;
+  ingredient: TBurgerConstructorItem;
   index: number;
   onMove: (fromIndex: number, toIndex: number) => void;
-  onRemove: (id: string) => void;
+  onRemove: (uniqueId: string) => void;
 };
 
 type TDragItem = {
@@ -220,7 +226,7 @@ const ConstructorFilling = ({
         text={ingredient.name}
         price={ingredient.price}
         thumbnail={ingredient.image}
-        handleClose={() => onRemove(ingredient._id)}
+        handleClose={() => onRemove(ingredient.uniqueId)}
       />
     </div>
   );
