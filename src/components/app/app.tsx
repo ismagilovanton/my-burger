@@ -1,4 +1,5 @@
-import { useIngredient } from '@/hooks/useIngredient';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 
 import { AppHeader } from '@components/app-header/app-header';
 import { BurgerConstructor } from '@components/burger-constructor/burger-constructor';
@@ -7,8 +8,6 @@ import { BurgerIngredients } from '@components/burger-ingredients/burger-ingredi
 import styles from './app.module.css';
 
 export const App = (): React.JSX.Element => {
-  const { ingredients, isLoading, error } = useIngredient();
-
   return (
     <div className={styles.app}>
       <AppHeader />
@@ -16,18 +15,10 @@ export const App = (): React.JSX.Element => {
         Соберите бургер
       </h1>
       <main className={`${styles.main} pl-5 pr-5`}>
-        {isLoading ? (
-          <div>Loading...</div>
-        ) : error ? (
-          <div>Error: {error}</div>
-        ) : ingredients.length === 0 ? (
-          <div>No ingredients found</div>
-        ) : (
-          <>
-            <BurgerIngredients ingredients={ingredients} />
-            <BurgerConstructor ingredients={ingredients} />
-          </>
-        )}
+        <DndProvider backend={HTML5Backend}>
+          <BurgerIngredients />
+          <BurgerConstructor />
+        </DndProvider>
       </main>
     </div>
   );

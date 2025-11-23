@@ -1,5 +1,12 @@
+import { useAppDispatch, useAppSelector } from '@/hooks/redux';
+import { useScrollActiveTab } from '@/hooks/useScrollActiveTab';
+import {
+  setCurrentIngredient,
+  clearCurrentIngredient,
+} from '@/services/current-ingredient/currentIngredientSlice';
+import { fetchIngredients } from '@/services/ingredients/ingredientsSlice';
 import { Tab } from '@krgaa/react-developer-burger-ui-components';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
 import { IngredientDetails } from '@components/ingredient-details/ingredient-details';
 import { Modal } from '@components/modal/modal';
@@ -10,10 +17,6 @@ import type { TIngredient } from '@utils/types';
 
 import styles from './burger-ingredients.module.css';
 
-type TBurgerIngredientsProps = {
-  ingredients: TIngredient[];
-};
-
 type TActiveTab = 'bun' | 'main' | 'sauce';
 
 const activeTabLabels: Record<TActiveTab, string> = {
@@ -22,13 +25,24 @@ const activeTabLabels: Record<TActiveTab, string> = {
   sauce: 'Соусы',
 };
 
-export const BurgerIngredients = ({
-  ingredients,
-}: TBurgerIngredientsProps): React.JSX.Element => {
-  console.log(ingredients);
+export const BurgerIngredients = (): React.JSX.Element => {
+  const dispatch = useAppDispatch();
 
-  const [activeTab, setActiveTab] = useState<TActiveTab>('bun');
-  const [selectedIngredient, setSelectedIngredient] = useState<TIngredient | null>(null);
+  const {
+    items: ingredients,
+    status,
+    error,
+  } = useAppSelector((state) => state.ingredients);
+
+  const currentIngredient = useAppSelector((state) => state.currentIngredient.current);
+
+  useEffect(() => {
+    if (status === 'idle') {
+      void dispatch(fetchIngredients());
+    }
+  }, [dispatch, status]);
+
+  const sectionKeys: readonly TActiveTab[] = ['bun', 'main', 'sauce'] as const;
 
   const groupedIngredients = useMemo(() => {
     return ingredients.reduce(
@@ -41,9 +55,30 @@ export const BurgerIngredients = ({
     );
   }, [ingredients]);
 
+  const { containerRef, registerHeader, activeTab, setActiveTab } =
+    useScrollActiveTab<TActiveTab>(sectionKeys, (key) =>
+      Boolean(groupedIngredients[key]?.length)
+    );
+
+  const countsById = useAppSelector((state) => {
+    const map = new Map<string, number>();
+    const items = state.burgerConstructor.items;
+    for (const it of items) {
+      if (it.type === 'bun') continue;
+      map.set(it._id, (map.get(it._id) ?? 0) + 1);
+    }
+    const bun = items.find((i) => i.type === 'bun');
+    if (bun) {
+      map.set(bun._id, 2);
+    }
+    return map;
+  });
+
   return (
     <>
       <section className={styles.burger_ingredients}>
+        {status === 'loading' && <div>Loading...</div>}
+        {status === 'failed' && <div>Error: {error}</div>}
         <nav>
           <ul className={`${styles.menu} mb-10 mt-5`}>
             <Tab
@@ -69,10 +104,13 @@ export const BurgerIngredients = ({
             </Tab>
           </ul>
         </nav>
-        <div className={styles.burger_ingredients_list}>
+        <div className={styles.burger_ingredients_list} ref={containerRef}>
           {Object.entries(groupedIngredients).map(([sectionKey, items]) => (
             <React.Fragment key={sectionKey}>
-              <p className="text text_type_main-medium">
+              <p
+                className="text text_type_main-medium"
+                ref={registerHeader(sectionKey as TActiveTab)}
+              >
                 {activeTabLabels[sectionKey as TActiveTab] ?? sectionKey}
               </p>
               <div className={`${styles.burger_ingredients_grid} pt-6 pb-10 pl-4 pr-4`}>
@@ -80,7 +118,8 @@ export const BurgerIngredients = ({
                   <BurgerIngredientCard
                     key={ingredient._id}
                     ingredient={ingredient}
-                    onClick={() => setSelectedIngredient(ingredient)}
+                    count={countsById.get(ingredient._id) ?? 0}
+                    onClick={() => dispatch(setCurrentIngredient(ingredient))}
                   />
                 ))}
               </div>
@@ -88,9 +127,12 @@ export const BurgerIngredients = ({
           ))}
         </div>
       </section>
-      {selectedIngredient && (
-        <Modal title="Детали ингредиента" onClose={() => setSelectedIngredient(null)}>
-          <IngredientDetails ingredient={selectedIngredient} />
+      {currentIngredient && (
+        <Modal
+          title="Детали ингредиента"
+          onClose={() => dispatch(clearCurrentIngredient())}
+        >
+          <IngredientDetails ingredient={currentIngredient} />
         </Modal>
       )}
     </>
