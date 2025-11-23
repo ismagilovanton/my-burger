@@ -1,10 +1,10 @@
+import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import {
   addBurgerConstructorItem,
   moveBurgerConstructorItem,
   removeBurgerConstructorItem,
-} from '@/features/burger-constructor/burgerConstructorSlice';
-import { createOrder } from '@/features/order/orderSlice';
-import { useAppDispatch, useAppSelector } from '@/hooks/redux';
+} from '@/services/burger-constructor/burgerConstructorSlice';
+import { createOrder } from '@/services/order/orderSlice';
 import {
   Button,
   ConstructorElement,

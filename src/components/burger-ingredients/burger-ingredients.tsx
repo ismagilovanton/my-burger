@@ -1,10 +1,10 @@
+import { useAppDispatch, useAppSelector } from '@/hooks/redux';
+import { useScrollActiveTab } from '@/hooks/useScrollActiveTab';
 import {
   setCurrentIngredient,
   clearCurrentIngredient,
-} from '@/features/current-ingredient/currentIngredientSlice';
-import { fetchIngredients } from '@/features/ingredients/ingredientsSlice';
-import { useAppDispatch, useAppSelector } from '@/hooks/redux';
-import { useScrollActiveTab } from '@/hooks/useScrollActiveTab';
+} from '@/services/current-ingredient/currentIngredientSlice';
+import { fetchIngredients } from '@/services/ingredients/ingredientsSlice';
 import { Tab } from '@krgaa/react-developer-burger-ui-components';
 import React, { useEffect, useMemo } from 'react';
 
