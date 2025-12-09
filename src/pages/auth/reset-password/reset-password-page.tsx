@@ -1,41 +1,59 @@
+import { useResetPassword } from '@/hooks/useResetPassword';
 import { MainLayout } from '@/layouts/main-layout/main-layout';
 import {
   Button,
   Input,
   PasswordInput,
 } from '@krgaa/react-developer-burger-ui-components';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import type React from 'react';
 
 import styles from './reset-password-page.module.css';
 
 export const ResetPasswordPage = (): React.JSX.Element => {
+  const [password, setPassword] = useState('');
+  const [token, setToken] = useState('');
+  const { isLoading, resetPassword } = useResetPassword();
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
+    event.preventDefault();
+    void resetPassword({ password, token });
+  };
+
   return (
     <MainLayout>
       <section className={styles.page}>
-        <form className={styles.form}>
+        <form className={styles.form} onSubmit={handleSubmit}>
           <h1 className="text text_type_main-medium mb-6">Восстановление пароля</h1>
           <PasswordInput
             placeholder="Введите новый пароль"
             extraClass="mb-6"
-            value=""
-            onChange={() => undefined}
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
           />
           <Input
             type="text"
             placeholder="Введите код из письма"
             extraClass="mb-6"
-            value=""
-            onChange={() => undefined}
+            value={token}
+            onChange={(event) => setToken(event.target.value)}
           />
-          <Button htmlType="button" type="primary" size="medium" extraClass="mb-20">
-            Сохранить
+          <Button
+            htmlType="submit"
+            type="primary"
+            size="medium"
+            extraClass="mb-20"
+            disabled={isLoading || !password || !token}
+          >
+            {isLoading ? 'Сохранение...' : 'Сохранить'}
           </Button>
           <p className="text text_type_main-default text_color_inactive">
             Вспомнили пароль?{' '}
-            <a href="/login" className={styles.link}>
+            <Link to="/login" className={styles.link}>
               Войти
-            </a>
+            </Link>
           </p>
         </form>
       </section>
