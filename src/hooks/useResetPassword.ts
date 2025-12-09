@@ -36,9 +36,6 @@ export const useResetPassword = (): TUseResetPassword => {
     try {
       const data = await apiAuth.resetPassword({ password, token });
 
-      // В реальном приложении после успешного сброса пароля
-      // пользователя можно перенаправить, например, на страницу логина.
-
       console.log(data.message);
       await navigate('/login');
     } catch (error) {

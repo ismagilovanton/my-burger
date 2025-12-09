@@ -2,7 +2,12 @@ import { apiAuth } from '@/api/apiAuth';
 import { deleteCookie, setCookie } from '@/utils/cookie';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-import type { TLoginRequest, TRegisterRequest, TUser } from '@/types/auth';
+import type {
+  TLoginRequest,
+  TRegisterRequest,
+  TUpdateUserRequest,
+  TUser,
+} from '@/types/auth';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
 type TAuthState = {
@@ -102,6 +107,32 @@ export const refreshToken = createAsyncThunk<void>(
   }
 );
 
+export const fetchUser = createAsyncThunk<TUser>(
+  'auth/fetchUser',
+  async (_, { rejectWithValue }) => {
+    try {
+      const data = await apiAuth.getUser();
+      return data.user;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      return rejectWithValue(message);
+    }
+  }
+);
+
+export const updateUser = createAsyncThunk<TUser, TUpdateUserRequest>(
+  'auth/updateUser',
+  async (payload, { rejectWithValue }) => {
+    try {
+      const data = await apiAuth.updateUser(payload);
+      return data.user;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      return rejectWithValue(message);
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -178,6 +209,39 @@ const authSlice = createSlice({
           (action.payload as string | undefined) ??
           action.error.message ??
           'Failed to refresh token';
+      })
+      .addCase(fetchUser.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(fetchUser.fulfilled, (state, action) => {
+        state.user = action.payload;
+        state.status = 'succeeded';
+        state.isAuthChecked = true;
+      })
+      .addCase(fetchUser.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error =
+          (action.payload as string | undefined) ??
+          action.error.message ??
+          'Failed to get user';
+        state.isAuthChecked = true;
+      })
+      .addCase(updateUser.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(updateUser.fulfilled, (state, action) => {
+        state.user = action.payload;
+        state.status = 'succeeded';
+        state.isAuthChecked = true;
+      })
+      .addCase(updateUser.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error =
+          (action.payload as string | undefined) ??
+          action.error.message ??
+          'Failed to update user';
       });
   },
 });

@@ -1,5 +1,6 @@
 import { API_URL } from '@/constants/api';
 import { handleResponse } from '@/helpers/apiErrorHandler';
+import { getCookie } from '@/utils/cookie';
 
 import type {
   TAuthResponse,
@@ -8,7 +9,21 @@ import type {
   TRegisterRequest,
   TTokenRequest,
   TTokenResponse,
+  TUpdateUserRequest,
+  TUserResponse,
 } from '@/types/auth';
+
+const ACCESS_TOKEN_COOKIE_KEY = 'accessToken';
+
+const getAccessTokenFromCookie = (): string => {
+  const token = getCookie(ACCESS_TOKEN_COOKIE_KEY);
+
+  if (!token) {
+    throw new Error('No access token');
+  }
+
+  return token;
+};
 
 type TForgotPasswordRequest = {
   email: string;
@@ -107,5 +122,34 @@ export const apiAuth = {
     });
 
     return handleResponse<TLogoutResponse>(response, 'Failed to logout');
+  },
+
+  getUser: async (): Promise<TUserResponse> => {
+    const accessToken = getAccessTokenFromCookie();
+
+    const response = await fetch(`${API_URL}/auth/user`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        authorization: accessToken,
+      },
+    });
+
+    return handleResponse<TUserResponse>(response, 'Failed to get user');
+  },
+
+  updateUser: async (payload: TUpdateUserRequest): Promise<TUserResponse> => {
+    const accessToken = getAccessTokenFromCookie();
+
+    const response = await fetch(`${API_URL}/auth/user`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        authorization: accessToken,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    return handleResponse<TUserResponse>(response, 'Failed to update user');
   },
 };
