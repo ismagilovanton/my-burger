@@ -4,6 +4,7 @@ import {
   Input,
   PasswordInput,
 } from '@krgaa/react-developer-burger-ui-components';
+import { Link } from 'react-router-dom';
 
 import type React from 'react';
 
@@ -33,15 +34,15 @@ export const LoginPage = (): React.JSX.Element => {
           </Button>
           <p className="text text_type_main-default text_color_inactive mb-4">
             Вы — новый пользователь?{' '}
-            <a href="/register" className={styles.link}>
+            <Link to="/register" className={styles.link}>
               Зарегистрироваться
-            </a>
+            </Link>
           </p>
           <p className="text text_type_main-default text_color_inactive">
             Забыли пароль?{' '}
-            <a href="/forgot-password" className={styles.link}>
+            <Link to="/forgot-password" className={styles.link}>
               Восстановить пароль
-            </a>
+            </Link>
           </p>
         </form>
       </section>

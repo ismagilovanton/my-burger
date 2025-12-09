@@ -4,6 +4,7 @@ import {
   Input,
   PasswordInput,
 } from '@krgaa/react-developer-burger-ui-components';
+import { Link } from 'react-router-dom';
 
 import type React from 'react';
 
@@ -40,9 +41,9 @@ export const RegisterPage = (): React.JSX.Element => {
           </Button>
           <p className="text text_type_main-default text_color_inactive">
             Уже зарегистрированы?{' '}
-            <a href="/login" className={styles.link}>
+            <Link to="/login" className={styles.link}>
               Войти
-            </a>
+            </Link>
           </p>
         </form>
       </section>
