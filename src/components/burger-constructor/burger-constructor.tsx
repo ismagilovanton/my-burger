@@ -14,6 +14,7 @@ import {
 } from '@krgaa/react-developer-burger-ui-components';
 import { useMemo, useState, useRef } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { Modal } from '@components/modal/modal';
 import { OrderDetails } from '@components/order-details/order-details';
@@ -24,6 +25,8 @@ import styles from './burger-constructor.module.css';
 
 export const BurgerConstructor = (): React.JSX.Element => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
   const burgerConstructorItems = useAppSelector(
     (state) => state.burgerConstructor.items
   );
@@ -31,6 +34,8 @@ export const BurgerConstructor = (): React.JSX.Element => {
     (state) => state.order.order?.orderNumber ?? '-----'
   );
   const [isOrderModalOpen, setIsOrderModalOpen] = useState<boolean>(false);
+
+  const { user, isAuthChecked } = useAppSelector((state) => state.auth);
 
   const [, dropRef] = useDrop<{ ingredient: TIngredient }, void, unknown>(() => ({
     accept: 'INGREDIENT',
@@ -58,6 +63,15 @@ export const BurgerConstructor = (): React.JSX.Element => {
   };
 
   const handleCreateOrder = (): void => {
+    if (!isAuthChecked) {
+      return;
+    }
+
+    if (!user) {
+      navigate('/login', { state: { from: location } });
+      return;
+    }
+
     const ingredientIds: string[] = burgerConstructorItems.map((i) => i._id);
     void dispatch(createOrder(ingredientIds));
     setIsOrderModalOpen(true);
