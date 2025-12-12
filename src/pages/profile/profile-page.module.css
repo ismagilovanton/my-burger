@@ -4,10 +4,17 @@
   gap: 60px;
 }
 
+.page nav {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
 .sidebar {
   width: 320px;
   display: flex;
   flex-direction: column;
+  gap: 80px;
 }
 
 .navItem {
