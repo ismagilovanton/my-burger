@@ -6,16 +6,18 @@ import {
   Input,
   PasswordInput,
 } from '@krgaa/react-developer-burger-ui-components';
-import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import type React from 'react';
+import type { Location } from 'react-router-dom';
 
 import styles from './login-page.module.css';
 
 export const LoginPage = (): React.JSX.Element => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const { status, error } = useAppSelector((state) => state.auth);
 
@@ -23,6 +25,11 @@ export const LoginPage = (): React.JSX.Element => {
   const [password, setPassword] = useState('');
 
   const isLoading = status === 'loading';
+
+  const from = useMemo(() => {
+    const state = location.state as { from?: Location } | null;
+    return state?.from?.pathname || '/';
+  }, [location.state]);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
@@ -36,9 +43,9 @@ export const LoginPage = (): React.JSX.Element => {
 
   useEffect(() => {
     if (status === 'succeeded') {
-      void navigate('/');
+      void navigate(from, { replace: true });
     }
-  }, [status, navigate]);
+  }, [status, navigate, from]);
 
   return (
     <MainLayout>

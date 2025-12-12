@@ -25,6 +25,7 @@ export const useForgotPassword = (): TUseForgotPassword => {
       const data = await apiAuth.forgotPassword({ email });
 
       console.log(data.message);
+      sessionStorage.setItem('resetPasswordAllowed', 'true');
       await navigate('/reset-password');
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);

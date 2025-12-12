@@ -5,8 +5,8 @@ import {
   Input,
   PasswordInput,
 } from '@krgaa/react-developer-burger-ui-components';
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 import type React from 'react';
 
@@ -16,6 +16,15 @@ export const ResetPasswordPage = (): React.JSX.Element => {
   const [password, setPassword] = useState('');
   const [token, setToken] = useState('');
   const { isLoading, resetPassword } = useResetPassword();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const isAllowed = sessionStorage.getItem('resetPasswordAllowed');
+
+    if (!isAllowed) {
+      void navigate('/forgot-password', { replace: true });
+    }
+  }, [navigate]);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault();

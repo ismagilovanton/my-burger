@@ -1,3 +1,4 @@
+import { ProtectedRouteElement } from '@/components/protected-route-element/protected-route-element';
 import { ForgotPasswordPage } from '@/pages/auth/forgot-password/forgot-password-page';
 import { LoginPage } from '@/pages/auth/login/login-page';
 import { RegisterPage } from '@/pages/auth/register/register-page';
@@ -13,11 +14,26 @@ export const App = (): React.JSX.Element => {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-        <Route path="/reset-password" element={<ResetPasswordPage />} />
-        <Route path="/profile" element={<ProfilePage />} />
+        <Route
+          path="/login"
+          element={<ProtectedRouteElement onlyUnAuth element={<LoginPage />} />}
+        />
+        <Route
+          path="/register"
+          element={<ProtectedRouteElement onlyUnAuth element={<RegisterPage />} />}
+        />
+        <Route
+          path="/forgot-password"
+          element={<ProtectedRouteElement onlyUnAuth element={<ForgotPasswordPage />} />}
+        />
+        <Route
+          path="/reset-password"
+          element={<ProtectedRouteElement onlyUnAuth element={<ResetPasswordPage />} />}
+        />
+        <Route
+          path="/profile/*"
+          element={<ProtectedRouteElement element={<ProfilePage />} />}
+        />
         <Route path="/ingredients/:id" element={<IngredientsDetailPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>

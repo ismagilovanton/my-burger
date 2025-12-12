@@ -37,6 +37,7 @@ export const useResetPassword = (): TUseResetPassword => {
       const data = await apiAuth.resetPassword({ password, token });
 
       console.log(data.message);
+      sessionStorage.removeItem('resetPasswordAllowed');
       await navigate('/login');
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
