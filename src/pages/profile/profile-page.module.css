@@ -20,6 +20,7 @@
 .navItem {
   margin-bottom: 16px;
   cursor: pointer;
+  text-decoration: none;
 }
 
 .navItemActive {
