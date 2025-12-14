@@ -35,7 +35,7 @@ export const BurgerConstructor = (): React.JSX.Element => {
   );
   const [isOrderModalOpen, setIsOrderModalOpen] = useState<boolean>(false);
 
-  const { user, isAuthChecked } = useAppSelector((state) => state.auth);
+  const { user } = useAppSelector((state) => state.auth);
 
   const [, dropRef] = useDrop<{ ingredient: TIngredient }, void, unknown>(() => ({
     accept: 'INGREDIENT',
@@ -63,12 +63,8 @@ export const BurgerConstructor = (): React.JSX.Element => {
   };
 
   const handleCreateOrder = (): void => {
-    if (!isAuthChecked) {
-      return;
-    }
-
     if (!user) {
-      navigate('/login', { state: { from: location } });
+      void navigate('/login', { state: { from: location } });
       return;
     }
 
