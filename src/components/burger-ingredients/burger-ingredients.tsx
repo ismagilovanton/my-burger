@@ -1,8 +1,7 @@
-import { useAppDispatch, useAppSelector } from '@/hooks/redux';
+import { useAppSelector } from '@/hooks/redux';
 import { useScrollActiveTab } from '@/hooks/useScrollActiveTab';
-import { fetchIngredients } from '@/services/ingredients/ingredientsSlice';
 import { Tab } from '@krgaa/react-developer-burger-ui-components';
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { BurgerIngredientCard } from '../burger-ingredient-card/burger-ingredient-card';
@@ -20,7 +19,6 @@ const activeTabLabels: Record<TActiveTab, string> = {
 };
 
 export const BurgerIngredients = (): React.JSX.Element => {
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -29,12 +27,6 @@ export const BurgerIngredients = (): React.JSX.Element => {
     status,
     error,
   } = useAppSelector((state) => state.ingredients);
-
-  useEffect(() => {
-    if (status === 'idle') {
-      void dispatch(fetchIngredients());
-    }
-  }, [dispatch, status]);
 
   const sectionKeys: readonly TActiveTab[] = ['bun', 'main', 'sauce'] as const;
 
