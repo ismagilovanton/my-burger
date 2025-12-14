@@ -14,7 +14,7 @@ export const HomePage = (): React.JSX.Element => {
       <h1 className={`${styles.title} text text_type_main-large mt-10 mb-5 pl-5`}>
         Соберите бургер
       </h1>
-      <div style={{ display: 'flex', gap: '40px', flex: 1, minHeight: 0 }}>
+      <div className={styles.constructor}>
         <DndProvider backend={HTML5Backend}>
           <BurgerIngredients />
           <BurgerConstructor />
