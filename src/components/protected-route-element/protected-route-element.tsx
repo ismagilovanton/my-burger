@@ -1,11 +1,11 @@
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import { fetchUser } from '@/services/auth/authSlice';
-import type React from 'react';
 import { useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import type { Location } from 'react-router-dom';
 
 import type { RootState } from '@/root-reducer';
+import type React from 'react';
+import type { Location } from 'react-router-dom';
 
 type TProtectedRouteElementProps = {
   element: React.JSX.Element;
@@ -27,7 +27,11 @@ export const ProtectedRouteElement = ({
   }, [dispatch, isAuthChecked]);
 
   if (!isAuthChecked) {
-    return <></>;
+    return (
+      <div className="pt-30 text text_type_main-default text_color_inactive">
+        Загрузка пользователя...
+      </div>
+    );
   }
 
   if (onlyUnAuth && user) {
@@ -42,4 +46,3 @@ export const ProtectedRouteElement = ({
 
   return element;
 };
-
