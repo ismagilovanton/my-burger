@@ -1,5 +1,4 @@
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
-import { MainLayout } from '@/layouts/main-layout/main-layout';
 import { loginUser } from '@/services/auth/authSlice';
 import {
   Button,
@@ -48,49 +47,47 @@ export const LoginPage = (): React.JSX.Element => {
   }, [status, navigate, from]);
 
   return (
-    <MainLayout>
-      <section className={styles.page}>
-        <form className={styles.form} onSubmit={handleSubmit}>
-          <h1 className="text text_type_main-medium mb-6">Вход</h1>
-          <Input
-            type="email"
-            placeholder="E-mail"
-            extraClass="mb-6"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <PasswordInput
-            placeholder="Пароль"
-            extraClass="mb-6"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          {error && (
-            <p className="text text_type_main-default text_color_error mb-4">{error}</p>
-          )}
-          <Button
-            htmlType="submit"
-            type="primary"
-            size="medium"
-            extraClass="mb-20"
-            disabled={isLoading}
-          >
-            {isLoading ? 'Входим...' : 'Войти'}
-          </Button>
-          <p className="text text_type_main-default text_color_inactive mb-4">
-            Вы — новый пользователь?{' '}
-            <Link to="/register" className={styles.link}>
-              Зарегистрироваться
-            </Link>
-          </p>
-          <p className="text text_type_main-default text_color_inactive">
-            Забыли пароль?{' '}
-            <Link to="/forgot-password" className={styles.link}>
-              Восстановить пароль
-            </Link>
-          </p>
-        </form>
-      </section>
-    </MainLayout>
+    <section className={styles.page}>
+      <form className={styles.form} onSubmit={handleSubmit}>
+        <h1 className="text text_type_main-medium mb-6">Вход</h1>
+        <Input
+          type="email"
+          placeholder="E-mail"
+          extraClass="mb-6"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <PasswordInput
+          placeholder="Пароль"
+          extraClass="mb-6"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        {error && (
+          <p className="text text_type_main-default text_color_error mb-4">{error}</p>
+        )}
+        <Button
+          htmlType="submit"
+          type="primary"
+          size="medium"
+          extraClass="mb-20"
+          disabled={isLoading}
+        >
+          {isLoading ? 'Входим...' : 'Войти'}
+        </Button>
+        <p className="text text_type_main-default text_color_inactive mb-4">
+          Вы — новый пользователь?{' '}
+          <Link to="/register" className={styles.link}>
+            Зарегистрироваться
+          </Link>
+        </p>
+        <p className="text text_type_main-default text_color_inactive">
+          Забыли пароль?{' '}
+          <Link to="/forgot-password" className={styles.link}>
+            Восстановить пароль
+          </Link>
+        </p>
+      </form>
+    </section>
   );
 };

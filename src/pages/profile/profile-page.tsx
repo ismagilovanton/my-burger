@@ -1,5 +1,4 @@
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
-import { MainLayout } from '@/layouts/main-layout/main-layout';
 import { fetchUser, logoutUser, updateUser } from '@/services/auth/authSlice';
 import {
   Button,
@@ -75,111 +74,109 @@ export const ProfilePage = (): React.JSX.Element => {
   };
 
   return (
-    <MainLayout>
-      <section className={styles.page}>
-        <aside className={styles.sidebar}>
-          <nav>
-            <NavLink
-              to="/profile"
-              end
-              className={({ isActive }) =>
-                `${styles.navItem} ${
-                  isActive ? styles.navItemActive : styles.navItemInactive
-                } text text_type_main-medium`
-              }
-            >
-              Профиль
-            </NavLink>
-            <NavLink
-              to="/profile/orders"
-              className={({ isActive }) =>
-                `${styles.navItem} ${
-                  isActive ? styles.navItemActive : styles.navItemInactive
-                } text text_type_main-medium`
-              }
-            >
-              История заказов
-            </NavLink>
-            <p
-              className={`${styles.navItem} ${styles.navItemInactive} text text_type_main-medium`}
-              onClick={handleLogout}
-            >
-              Выход
-            </p>
-          </nav>
-          <p
-            className={`${styles.description} text text_type_main-default text_color_inactive`}
+    <section className={styles.page}>
+      <aside className={styles.sidebar}>
+        <nav>
+          <NavLink
+            to="/profile"
+            end
+            className={({ isActive }) =>
+              `${styles.navItem} ${
+                isActive ? styles.navItemActive : styles.navItemInactive
+              } text text_type_main-medium`
+            }
           >
-            В этом разделе вы можете изменить свои персональные данные
+            Профиль
+          </NavLink>
+          <NavLink
+            to="/profile/orders"
+            className={({ isActive }) =>
+              `${styles.navItem} ${
+                isActive ? styles.navItemActive : styles.navItemInactive
+              } text text_type_main-medium`
+            }
+          >
+            История заказов
+          </NavLink>
+          <p
+            className={`${styles.navItem} ${styles.navItemInactive} text text_type_main-medium`}
+            onClick={handleLogout}
+          >
+            Выход
           </p>
-        </aside>
-        <div className={styles.content}>
-          <Routes>
-            <Route
-              index
-              element={
-                <form className={styles.form} onSubmit={handleSubmit}>
-                  <Input
-                    type="text"
-                    placeholder="Имя"
-                    extraClass="mb-6"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                  />
-                  <Input
-                    type="email"
-                    placeholder="Логин"
-                    extraClass="mb-6"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                  <PasswordInput
-                    placeholder="Пароль"
-                    extraClass="mb-6"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                  {error && (
-                    <p className="text text_type_main-default text_color_error mb-4">
-                      {error}
-                    </p>
-                  )}
-                  {isFormChanged && (
-                    <div className="mt-4">
-                      <Button
-                        htmlType="button"
-                        type="secondary"
-                        size="medium"
-                        extraClass="mr-6"
-                        onClick={handleCancel}
-                        disabled={isLoading}
-                      >
-                        Отмена
-                      </Button>
-                      <Button
-                        htmlType="submit"
-                        type="primary"
-                        size="medium"
-                        disabled={isLoading}
-                      >
-                        {isLoading ? 'Сохраняем...' : 'Сохранить'}
-                      </Button>
-                    </div>
-                  )}
-                </form>
-              }
-            />
-            <Route
-              path="orders"
-              element={
-                <p className="text text_type_main-default text_color_inactive">
-                  История заказов пока пуста.
-                </p>
-              }
-            />
-          </Routes>
-        </div>
-      </section>
-    </MainLayout>
+        </nav>
+        <p
+          className={`${styles.description} text text_type_main-default text_color_inactive`}
+        >
+          В этом разделе вы можете изменить свои персональные данные
+        </p>
+      </aside>
+      <div className={styles.content}>
+        <Routes>
+          <Route
+            index
+            element={
+              <form className={styles.form} onSubmit={handleSubmit}>
+                <Input
+                  type="text"
+                  placeholder="Имя"
+                  extraClass="mb-6"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+                <Input
+                  type="email"
+                  placeholder="Логин"
+                  extraClass="mb-6"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                <PasswordInput
+                  placeholder="Пароль"
+                  extraClass="mb-6"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                {error && (
+                  <p className="text text_type_main-default text_color_error mb-4">
+                    {error}
+                  </p>
+                )}
+                {isFormChanged && (
+                  <div className="mt-4">
+                    <Button
+                      htmlType="button"
+                      type="secondary"
+                      size="medium"
+                      extraClass="mr-6"
+                      onClick={handleCancel}
+                      disabled={isLoading}
+                    >
+                      Отмена
+                    </Button>
+                    <Button
+                      htmlType="submit"
+                      type="primary"
+                      size="medium"
+                      disabled={isLoading}
+                    >
+                      {isLoading ? 'Сохраняем...' : 'Сохранить'}
+                    </Button>
+                  </div>
+                )}
+              </form>
+            }
+          />
+          <Route
+            path="orders"
+            element={
+              <p className="text text_type_main-default text_color_inactive">
+                История заказов пока пуста.
+              </p>
+            }
+          />
+        </Routes>
+      </div>
+    </section>
   );
 };

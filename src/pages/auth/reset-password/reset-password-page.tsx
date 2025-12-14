@@ -1,5 +1,4 @@
 import { useResetPassword } from '@/hooks/useResetPassword';
-import { MainLayout } from '@/layouts/main-layout/main-layout';
 import {
   Button,
   Input,
@@ -32,40 +31,38 @@ export const ResetPasswordPage = (): React.JSX.Element => {
   };
 
   return (
-    <MainLayout>
-      <section className={styles.page}>
-        <form className={styles.form} onSubmit={handleSubmit}>
-          <h1 className="text text_type_main-medium mb-6">Восстановление пароля</h1>
-          <PasswordInput
-            placeholder="Введите новый пароль"
-            extraClass="mb-6"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-          />
-          <Input
-            type="text"
-            placeholder="Введите код из письма"
-            extraClass="mb-6"
-            value={token}
-            onChange={(event) => setToken(event.target.value)}
-          />
-          <Button
-            htmlType="submit"
-            type="primary"
-            size="medium"
-            extraClass="mb-20"
-            disabled={isLoading || !password || !token}
-          >
-            {isLoading ? 'Сохранение...' : 'Сохранить'}
-          </Button>
-          <p className="text text_type_main-default text_color_inactive">
-            Вспомнили пароль?{' '}
-            <Link to="/login" className={styles.link}>
-              Войти
-            </Link>
-          </p>
-        </form>
-      </section>
-    </MainLayout>
+    <section className={styles.page}>
+      <form className={styles.form} onSubmit={handleSubmit}>
+        <h1 className="text text_type_main-medium mb-6">Восстановление пароля</h1>
+        <PasswordInput
+          placeholder="Введите новый пароль"
+          extraClass="mb-6"
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+        />
+        <Input
+          type="text"
+          placeholder="Введите код из письма"
+          extraClass="mb-6"
+          value={token}
+          onChange={(event) => setToken(event.target.value)}
+        />
+        <Button
+          htmlType="submit"
+          type="primary"
+          size="medium"
+          extraClass="mb-20"
+          disabled={isLoading || !password || !token}
+        >
+          {isLoading ? 'Сохранение...' : 'Сохранить'}
+        </Button>
+        <p className="text text_type_main-default text_color_inactive">
+          Вспомнили пароль?{' '}
+          <Link to="/login" className={styles.link}>
+            Войти
+          </Link>
+        </p>
+      </form>
+    </section>
   );
 };
