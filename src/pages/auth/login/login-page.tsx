@@ -18,7 +18,7 @@ export const LoginPage = (): React.JSX.Element => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { status, error } = useAppSelector((state) => state.auth);
+  const { status, error, user } = useAppSelector((state) => state.auth);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -41,10 +41,10 @@ export const LoginPage = (): React.JSX.Element => {
   };
 
   useEffect(() => {
-    if (status === 'succeeded') {
+    if (status === 'succeeded' && user) {
       void navigate(from, { replace: true });
     }
-  }, [status, navigate, from]);
+  }, [status, user, navigate, from]);
 
   return (
     <section className={styles.page}>
