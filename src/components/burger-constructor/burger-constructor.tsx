@@ -1,11 +1,12 @@
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import {
   addBurgerConstructorItem,
+  clearBurgerConstructor,
   moveBurgerConstructorItem,
   removeBurgerConstructorItem,
   type TBurgerConstructorItem,
 } from '@/services/burger-constructor/burgerConstructorSlice';
-import { createOrder } from '@/services/order/orderSlice';
+import { clearOrder, createOrder } from '@/services/order/orderSlice';
 import {
   Button,
   ConstructorElement,
@@ -71,6 +72,12 @@ export const BurgerConstructor = (): React.JSX.Element => {
     const ingredientIds: string[] = burgerConstructorItems.map((i) => i._id);
     void dispatch(createOrder(ingredientIds));
     setIsOrderModalOpen(true);
+  };
+
+  const handleCloseOrderModal = (): void => {
+    setIsOrderModalOpen(false);
+    dispatch(clearBurgerConstructor());
+    dispatch(clearOrder());
   };
 
   const totalPrice: number = useMemo(
@@ -144,7 +151,7 @@ export const BurgerConstructor = (): React.JSX.Element => {
         </Button>
       </div>
       {isOrderModalOpen && (
-        <Modal onClose={() => setIsOrderModalOpen(false)}>
+        <Modal onClose={handleCloseOrderModal}>
           <OrderDetails orderNumber={orderNumber} />
         </Modal>
       )}
