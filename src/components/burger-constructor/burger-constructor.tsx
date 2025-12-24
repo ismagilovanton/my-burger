@@ -1,11 +1,12 @@
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import {
   addBurgerConstructorItem,
+  clearBurgerConstructor,
   moveBurgerConstructorItem,
   removeBurgerConstructorItem,
   type TBurgerConstructorItem,
 } from '@/services/burger-constructor/burgerConstructorSlice';
-import { createOrder } from '@/services/order/orderSlice';
+import { clearOrder, createOrder } from '@/services/order/orderSlice';
 import {
   Button,
   ConstructorElement,
@@ -14,6 +15,7 @@ import {
 } from '@krgaa/react-developer-burger-ui-components';
 import { useMemo, useState, useRef } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { Modal } from '@components/modal/modal';
 import { OrderDetails } from '@components/order-details/order-details';
@@ -24,6 +26,8 @@ import styles from './burger-constructor.module.css';
 
 export const BurgerConstructor = (): React.JSX.Element => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
   const burgerConstructorItems = useAppSelector(
     (state) => state.burgerConstructor.items
   );
@@ -31,6 +35,8 @@ export const BurgerConstructor = (): React.JSX.Element => {
     (state) => state.order.order?.orderNumber ?? '-----'
   );
   const [isOrderModalOpen, setIsOrderModalOpen] = useState<boolean>(false);
+
+  const { user } = useAppSelector((state) => state.auth);
 
   const [, dropRef] = useDrop<{ ingredient: TIngredient }, void, unknown>(() => ({
     accept: 'INGREDIENT',
@@ -58,9 +64,20 @@ export const BurgerConstructor = (): React.JSX.Element => {
   };
 
   const handleCreateOrder = (): void => {
+    if (!user) {
+      void navigate('/login', { state: { from: location } });
+      return;
+    }
+
     const ingredientIds: string[] = burgerConstructorItems.map((i) => i._id);
     void dispatch(createOrder(ingredientIds));
     setIsOrderModalOpen(true);
+  };
+
+  const handleCloseOrderModal = (): void => {
+    setIsOrderModalOpen(false);
+    dispatch(clearBurgerConstructor());
+    dispatch(clearOrder());
   };
 
   const totalPrice: number = useMemo(
@@ -134,7 +151,7 @@ export const BurgerConstructor = (): React.JSX.Element => {
         </Button>
       </div>
       {isOrderModalOpen && (
-        <Modal onClose={() => setIsOrderModalOpen(false)}>
+        <Modal onClose={handleCloseOrderModal}>
           <OrderDetails orderNumber={orderNumber} />
         </Modal>
       )}

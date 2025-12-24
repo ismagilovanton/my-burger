@@ -4,7 +4,7 @@ declare const classNames: {
   readonly menu_part_left: "menu_part_left";
   readonly link: "link";
   readonly link_active: "link_active";
-  readonly link_position_last: "link_position_last";
+  readonly menu_part_right: "menu_part_right";
   readonly logo: "logo";
 };
 export default classNames;

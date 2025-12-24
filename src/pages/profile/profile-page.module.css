@@ -1,0 +1,48 @@
+.page {
+  display: flex;
+  padding-top: 120px;
+  gap: 60px;
+}
+
+.page nav {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sidebar {
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 80px;
+}
+
+.navItem {
+  margin-bottom: 16px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.navItemActive {
+  color: var(--text-primary-color);
+}
+
+.navItemInactive {
+  color: var(--text-inactive-color, #8585ad);
+}
+
+.description {
+  margin-top: 40px;
+}
+
+.content {
+  flex: 1;
+  max-width: 580px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}

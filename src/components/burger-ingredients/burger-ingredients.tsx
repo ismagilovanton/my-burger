@@ -1,15 +1,8 @@
-import { useAppDispatch, useAppSelector } from '@/hooks/redux';
+import { useAppSelector } from '@/hooks/redux';
 import { useScrollActiveTab } from '@/hooks/useScrollActiveTab';
-import {
-  setCurrentIngredient,
-  clearCurrentIngredient,
-} from '@/services/current-ingredient/currentIngredientSlice';
-import { fetchIngredients } from '@/services/ingredients/ingredientsSlice';
 import { Tab } from '@krgaa/react-developer-burger-ui-components';
-import React, { useEffect, useMemo } from 'react';
-
-import { IngredientDetails } from '@components/ingredient-details/ingredient-details';
-import { Modal } from '@components/modal/modal';
+import React, { useMemo } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { BurgerIngredientCard } from '../burger-ingredient-card/burger-ingredient-card';
 
@@ -26,21 +19,14 @@ const activeTabLabels: Record<TActiveTab, string> = {
 };
 
 export const BurgerIngredients = (): React.JSX.Element => {
-  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const {
     items: ingredients,
     status,
     error,
   } = useAppSelector((state) => state.ingredients);
-
-  const currentIngredient = useAppSelector((state) => state.currentIngredient.current);
-
-  useEffect(() => {
-    if (status === 'idle') {
-      void dispatch(fetchIngredients());
-    }
-  }, [dispatch, status]);
 
   const sectionKeys: readonly TActiveTab[] = ['bun', 'main', 'sauce'] as const;
 
@@ -119,7 +105,11 @@ export const BurgerIngredients = (): React.JSX.Element => {
                     key={ingredient._id}
                     ingredient={ingredient}
                     count={countsById.get(ingredient._id) ?? 0}
-                    onClick={() => dispatch(setCurrentIngredient(ingredient))}
+                    onClick={() =>
+                      navigate(`/ingredients/${ingredient._id}`, {
+                        state: { backgroundLocation: location },
+                      })
+                    }
                   />
                 ))}
               </div>
@@ -127,14 +117,6 @@ export const BurgerIngredients = (): React.JSX.Element => {
           ))}
         </div>
       </section>
-      {currentIngredient && (
-        <Modal
-          title="Детали ингредиента"
-          onClose={() => dispatch(clearCurrentIngredient())}
-        >
-          <IngredientDetails ingredient={currentIngredient} />
-        </Modal>
-      )}
     </>
   );
 };

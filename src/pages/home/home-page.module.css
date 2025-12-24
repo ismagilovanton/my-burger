@@ -1,0 +1,13 @@
+.title {
+    width: 100%;
+    max-width: 1260px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.constructor {
+  display: flex;
+  gap: 40px;
+  flex: 1;
+  min-height: 0;
+}
