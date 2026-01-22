@@ -1,5 +1,5 @@
 import { OrderCard } from '@/components/order-card/order-card';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 import type { TIngredient } from '@/utils/types';
 import type React from 'react';
@@ -182,6 +182,8 @@ const BigNumberBlock = ({ title, value }: TBigNumberBlockProps): React.JSX.Eleme
 };
 
 export const FeedPage = (): React.JSX.Element => {
+  const location = useLocation();
+
   return (
     <section className={styles.page}>
       <h1 className={`${styles.title} text text_type_main-large mb-5`}>Лента заказов</h1>
@@ -191,6 +193,7 @@ export const FeedPage = (): React.JSX.Element => {
           <Link
             key={order.number}
             to={`/feed/${order.number}`}
+            state={{ backgroundLocation: location }}
             className="text_color_primary"
           >
             <OrderCard

@@ -1,5 +1,5 @@
 import { OrderCard } from '@/components/order-card/order-card';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 import type { TIngredient } from '@/utils/types';
 import type React from 'react';
@@ -118,12 +118,15 @@ const mockOrders: TMockOrder[] = Array.from({ length: 12 }, (_, index) => {
 });
 
 export const ProfileOrdersPage = (): React.JSX.Element => {
+  const location = useLocation();
+
   return (
     <section className={styles.page}>
       {mockOrders.map((order) => (
         <Link
           key={order.number}
           to={`/profile/orders/${order.number}`}
+          state={{ backgroundLocation: location }}
           className="text_color_primary"
         >
           <OrderCard
