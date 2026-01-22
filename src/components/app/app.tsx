@@ -7,9 +7,12 @@ import { ForgotPasswordPage } from '@/pages/auth/forgot-password/forgot-password
 import { LoginPage } from '@/pages/auth/login/login-page';
 import { RegisterPage } from '@/pages/auth/register/register-page';
 import { ResetPasswordPage } from '@/pages/auth/reset-password/reset-password-page';
+import { FeedDetailPage } from '@/pages/feed/feed-detail/feed-detail-page';
+import { FeedPage } from '@/pages/feed/feed-page';
 import { HomePage } from '@/pages/home/home-page';
 import { IngredientsDetailPage } from '@/pages/ingredients/ingredients-detail/ingredients-detail-page';
 import { NotFoundPage } from '@/pages/not-found/not-found-page';
+import { ProfileOrderDetailPage } from '@/pages/profile/orders/orders-detail/orders-detail-page';
 import { ProfilePage } from '@/pages/profile/profile-page';
 import { fetchIngredients } from '@/services/ingredients/ingredientsSlice';
 import { useEffect } from 'react';
@@ -65,6 +68,12 @@ const AppRoutes = (): React.JSX.Element => {
             element={<ProtectedRouteElement element={<ProfilePage />} />}
           />
           <Route path="/ingredients/:id" element={<IngredientsDetailPage />} />
+          <Route path="/feed" element={<FeedPage />} />
+          <Route path="/feed/:id" element={<FeedDetailPage />} />
+          <Route
+            path="/profile/orders/:id"
+            element={<ProtectedRouteElement element={<ProfileOrderDetailPage />} />}
+          />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
 
