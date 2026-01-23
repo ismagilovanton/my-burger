@@ -20,7 +20,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Modal } from '@components/modal/modal';
 import { OrderDetails } from '@components/order-details/order-details';
 
-import type { TIngredient } from '@utils/types';
+import type { TIngredient } from '@/types/ingredient';
 
 import styles from './burger-constructor.module.css';
 

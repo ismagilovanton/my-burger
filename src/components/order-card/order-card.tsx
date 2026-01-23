@@ -1,6 +1,6 @@
 import { CurrencyIcon } from '@krgaa/react-developer-burger-ui-components';
 
-import type { TIngredient } from '@/utils/types';
+import type { TIngredient } from '@/types/ingredient';
 import type React from 'react';
 
 import styles from './order-card.module.css';

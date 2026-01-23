@@ -1,7 +1,7 @@
 import { OrderCard } from '@/components/order-card/order-card';
 import { Link, useLocation } from 'react-router-dom';
 
-import type { TIngredient } from '@/utils/types';
+import type { TIngredient } from '@/types/ingredient';
 import type React from 'react';
 
 import styles from './orders-page.module.css';

@@ -1,7 +1,7 @@
 import { apiIngredient } from '@/api/apiIngredient';
 import { useState, useEffect } from 'react';
 
-import type { TIngredient } from '@/utils/types';
+import type { TIngredient } from '@/types/ingredient';
 
 type TUseIngredient = {
   ingredients: TIngredient[];

@@ -1,7 +1,7 @@
 import { apiIngredient } from '@/api/apiIngredient';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-import type { TIngredient } from '@/utils/types';
+import type { TIngredient } from '@/types/ingredient';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
 type TIngredientsState = {

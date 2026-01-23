@@ -1,26 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 import type { AppActions } from '@/types';
+import type { TOrder, TOrdersResponse } from '@/types/order';
 import type { PayloadAction } from '@reduxjs/toolkit';
-
-export type TFeedOrderStatus = 'done' | 'pending' | 'created';
-
-export type TOrder = {
-  _id: string;
-  ingredients: string[];
-  status: TFeedOrderStatus;
-  number: number;
-  createdAt: string;
-  updatedAt: string;
-  name: string;
-};
-
-export type TOrdersResponse = {
-  success: boolean;
-  orders: TOrder[];
-  total: number;
-  totalToday: number;
-};
 
 export type TFeedState = {
   orders: TOrder[];

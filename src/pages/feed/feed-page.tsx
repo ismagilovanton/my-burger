@@ -3,8 +3,8 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import { useEffect, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
-import type { TOrder } from '@/services/feed/feedSlice';
-import type { TIngredient } from '@/utils/types';
+import type { TIngredient } from '@/types/ingredient';
+import type { TOrder } from '@/types/order';
 
 import styles from './feed-page.module.css';
 

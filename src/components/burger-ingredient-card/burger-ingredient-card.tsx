@@ -1,7 +1,7 @@
 import { Counter, CurrencyIcon } from '@krgaa/react-developer-burger-ui-components';
 import { useDrag, type DragSourceMonitor } from 'react-dnd';
 
-import type { TIngredient } from '@utils/types';
+import type { TIngredient } from '@/types/ingredient';
 
 import styles from './burger-ingredient-card.module.css';
 
