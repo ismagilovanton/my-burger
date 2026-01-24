@@ -85,23 +85,29 @@ export const ProfileOrdersPage = (): React.JSX.Element => {
 
   return (
     <section className={styles.page}>
-      {uiOrders.map((order) => (
-        <Link
-          key={order.number}
-          to={`/profile/orders/${order.number}`}
-          state={{ backgroundLocation: location }}
-          className="text_color_primary"
-        >
-          <OrderCard
-            number={order.number}
-            name={order.name}
-            createdAt={order.createdAt}
-            price={order.price}
-            ingredients={order.ingredients}
-            statusText={getStatusText(order.status)}
-          />
-        </Link>
-      ))}
+      {uiOrders.length === 0 ? (
+        <p className="text text_type_main-default text_color_inactive">
+          У вас пока нет заказов
+        </p>
+      ) : (
+        uiOrders.map((order) => (
+          <Link
+            key={order.number}
+            to={`/profile/orders/${order.number}`}
+            state={{ backgroundLocation: location }}
+            className="text_color_primary"
+          >
+            <OrderCard
+              number={order.number}
+              name={order.name}
+              createdAt={order.createdAt}
+              price={order.price}
+              ingredients={order.ingredients}
+              statusText={getStatusText(order.status)}
+            />
+          </Link>
+        ))
+      )}
     </section>
   );
 };
