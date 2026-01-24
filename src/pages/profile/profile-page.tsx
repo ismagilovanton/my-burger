@@ -1,4 +1,5 @@
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
+import { ProfileOrdersPage } from '@/pages/profile/orders/orders-page';
 import { fetchUser, logoutUser, updateUser } from '@/services/auth/authSlice';
 import {
   Button,
@@ -167,14 +168,7 @@ export const ProfilePage = (): React.JSX.Element => {
               </form>
             }
           />
-          <Route
-            path="orders"
-            element={
-              <p className="text text_type_main-default text_color_inactive">
-                История заказов пока пуста.
-              </p>
-            }
-          />
+          <Route path="orders" element={<ProfileOrdersPage />} />
         </Routes>
       </div>
     </section>

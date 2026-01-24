@@ -1,7 +1,7 @@
 import { API_URL } from '@/constants/api';
 import { handleResponse } from '@/helpers/apiErrorHandler';
 
-import type { TIngredient } from '@/utils/types';
+import type { TIngredient } from '@/types/ingredient';
 
 export const apiIngredient = {
   getIngredients: async (): Promise<TIngredient[]> => {

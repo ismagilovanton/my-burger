@@ -20,7 +20,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Modal } from '@components/modal/modal';
 import { OrderDetails } from '@components/order-details/order-details';
 
-import type { TIngredient } from '@utils/types';
+import type { TIngredient } from '@/types/ingredient';
 
 import styles from './burger-constructor.module.css';
 
@@ -34,6 +34,7 @@ export const BurgerConstructor = (): React.JSX.Element => {
   const orderNumber: string = useAppSelector(
     (state) => state.order.order?.orderNumber ?? '-----'
   );
+  const orderStatus = useAppSelector((state) => state.order.status);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState<boolean>(false);
 
   const { user } = useAppSelector((state) => state.auth);
@@ -152,7 +153,7 @@ export const BurgerConstructor = (): React.JSX.Element => {
       </div>
       {isOrderModalOpen && (
         <Modal onClose={handleCloseOrderModal}>
-          <OrderDetails orderNumber={orderNumber} />
+          <OrderDetails orderNumber={orderNumber} status={orderStatus} />
         </Modal>
       )}
     </section>

@@ -6,7 +6,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import { BurgerIngredientCard } from '../burger-ingredient-card/burger-ingredient-card';
 
-import type { TIngredient } from '@utils/types';
+import type { TIngredient } from '@/types/ingredient';
 
 import styles from './burger-ingredients.module.css';
 
