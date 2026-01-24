@@ -65,12 +65,12 @@ export const socketMiddleware = (
       }
 
       if (socket) {
-        socket.onopen = (event: Event): void => {
-          dispatch({ type: onOpenType, payload: event });
+        socket.onopen = (): void => {
+          dispatch({ type: onOpenType });
         };
 
-        socket.onerror = (event: Event): void => {
-          dispatch({ type: onErrorType, payload: event });
+        socket.onerror = (): void => {
+          dispatch({ type: onErrorType, payload: 'WebSocket connection error' });
         };
 
         socket.onmessage = (event: MessageEvent<string>): void => {
@@ -79,7 +79,14 @@ export const socketMiddleware = (
         };
 
         socket.onclose = (event: CloseEvent): void => {
-          dispatch({ type: onCloseType, payload: event });
+          dispatch({
+            type: onCloseType,
+            payload: {
+              code: event.code,
+              reason: event.reason,
+              wasClean: event.wasClean,
+            },
+          });
           socket = null;
         };
 

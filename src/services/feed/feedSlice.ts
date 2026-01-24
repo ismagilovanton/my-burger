@@ -28,7 +28,7 @@ const feedSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addMatcher(
-        (action: AppActions): action is PayloadAction<Event> =>
+        (action: AppActions): action is PayloadAction<unknown> =>
           action.type === FEED_WS_ACTIONS.INIT,
         (state) => {
           state.status = 'connecting';
@@ -36,7 +36,7 @@ const feedSlice = createSlice({
         }
       )
       .addMatcher(
-        (action: AppActions): action is PayloadAction<Event> =>
+        (action: AppActions): action is PayloadAction<unknown> =>
           action.type === FEED_WS_ACTIONS.OPEN,
         (state) => {
           state.status = 'online';
@@ -44,17 +44,16 @@ const feedSlice = createSlice({
         }
       )
       .addMatcher(
-        (action: AppActions): action is PayloadAction<ErrorEvent> =>
+        (action: AppActions): action is PayloadAction<string | undefined> =>
           action.type === FEED_WS_ACTIONS.ERROR,
         (state, action) => {
           state.status = 'error';
           const payload = action.payload;
-          state.error =
-            typeof payload === 'string' ? payload : 'WebSocket connection error';
+          state.error = payload ?? 'WebSocket connection error';
         }
       )
       .addMatcher(
-        (action: AppActions): action is PayloadAction<CloseEvent> =>
+        (action: AppActions): action is PayloadAction<unknown> =>
           action.type === FEED_WS_ACTIONS.CLOSED,
         (state) => {
           state.status = 'offline';

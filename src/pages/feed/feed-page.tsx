@@ -10,6 +10,7 @@ import type { TOrder } from '@/types/order';
 import styles from './feed-page.module.css';
 
 type TUiOrder = {
+  id: string;
   number: number;
   name: string;
   createdAt: string;
@@ -111,6 +112,7 @@ export const FeedPage = (): React.JSX.Element => {
         .toString();
 
       return {
+        id: order._id,
         number: Number(order.number),
         name: order.name,
         createdAt,
@@ -139,7 +141,7 @@ export const FeedPage = (): React.JSX.Element => {
       <div className={styles.ordersColumn}>
         {uiOrders.map((order) => (
           <Link
-            key={order.number}
+            key={order.id}
             to={`/feed/${order.number}`}
             state={{ backgroundLocation: location }}
             className="text_color_primary"
