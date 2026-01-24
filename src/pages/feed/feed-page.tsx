@@ -1,4 +1,5 @@
 import { OrderCard } from '@/components/order-card/order-card';
+import { FEED_WS_ACTIONS } from '@/constants/ws';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import { useEffect, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
@@ -76,7 +77,11 @@ export const FeedPage = (): React.JSX.Element => {
   const { orders, total, totalToday } = useAppSelector((state) => state.feed);
 
   useEffect(() => {
-    dispatch({ type: 'WS_CONNECTION_START' });
+    dispatch({ type: FEED_WS_ACTIONS.INIT });
+
+    return (): void => {
+      dispatch({ type: FEED_WS_ACTIONS.CLOSE });
+    };
   }, [dispatch]);
 
   const ingredientsById = useMemo<Map<string, TIngredient>>(() => {

@@ -1,7 +1,34 @@
+import { getCookie } from '@/utils/cookie';
+
 import type { AppActions, AppDispatch, RootState } from '@/types';
 import type { Middleware, MiddlewareAPI } from 'redux';
 
-export const socketMiddleware = (wsUrl: string): Middleware => {
+type TSocketMiddlewareOptions = {
+  wsInitType: string;
+  wsCloseType: string;
+  wsSendType: string;
+  onOpenType: string;
+  onCloseType: string;
+  onErrorType: string;
+  onMessageType: string;
+  withAuth?: boolean;
+};
+
+export const socketMiddleware = (
+  wsUrl: string,
+  options?: Partial<TSocketMiddlewareOptions>
+): Middleware => {
+  const {
+    wsInitType = 'WS_CONNECTION_START',
+    wsCloseType = 'WS_CONNECTION_CLOSE',
+    wsSendType = 'WS_SEND_MESSAGE',
+    onOpenType = 'WS_CONNECTION_SUCCESS',
+    onCloseType = 'WS_CONNECTION_CLOSED',
+    onErrorType = 'WS_CONNECTION_ERROR',
+    onMessageType = 'WS_GET_MESSAGE',
+    withAuth = false,
+  } = options ?? {};
+
   return ((store: MiddlewareAPI<AppDispatch, RootState>) => {
     let socket: WebSocket | null = null;
 
@@ -9,36 +36,54 @@ export const socketMiddleware = (wsUrl: string): Middleware => {
       const { dispatch } = store;
       const { type, payload } = action as { type: string; payload?: unknown };
 
-      if (type === 'WS_CONNECTION_START' && !socket) {
-        // создаём подключение к WebSocket только если его ещё нет
-        socket = new WebSocket(wsUrl);
+      if (type === wsInitType) {
+        if (socket) {
+          socket.close();
+        }
+
+        let url = wsUrl;
+
+        if (withAuth) {
+          const accessToken = getCookie('accessToken');
+
+          if (!accessToken) {
+            return next(action);
+          }
+
+          const token = accessToken.startsWith('Bearer ')
+            ? accessToken.slice(7)
+            : accessToken;
+
+          url = `${wsUrl}?token=${token}`;
+        }
+
+        socket = new WebSocket(url);
+      }
+
+      if (type === wsCloseType && socket) {
+        socket.close();
       }
 
       if (socket) {
-        // соединение установлено
         socket.onopen = (event: Event): void => {
-          dispatch({ type: 'WS_CONNECTION_SUCCESS', payload: event });
+          dispatch({ type: onOpenType, payload: event });
         };
 
-        // ошибка соединения
         socket.onerror = (event: Event): void => {
-          dispatch({ type: 'WS_CONNECTION_ERROR', payload: event });
+          dispatch({ type: onErrorType, payload: event });
         };
 
-        // получение сообщения
         socket.onmessage = (event: MessageEvent<string>): void => {
           const { data } = event;
-          dispatch({ type: 'WS_GET_MESSAGE', payload: data });
+          dispatch({ type: onMessageType, payload: data });
         };
 
-        // закрытие соединения (со стороны сервера или из браузера)
         socket.onclose = (event: CloseEvent): void => {
-          dispatch({ type: 'WS_CONNECTION_CLOSED', payload: event });
+          dispatch({ type: onCloseType, payload: event });
           socket = null;
         };
 
-        // отправка сообщения на сервер по экшену
-        if (type === 'WS_SEND_MESSAGE' && payload) {
+        if (type === wsSendType && payload) {
           const message = payload as unknown;
           socket.send(JSON.stringify(message));
         }

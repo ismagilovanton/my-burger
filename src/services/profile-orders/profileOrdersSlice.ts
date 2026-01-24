@@ -1,11 +1,11 @@
+import { PROFILE_WS_ACTIONS } from '@/constants/ws';
 import { createSlice } from '@reduxjs/toolkit';
 
-import { FEED_WS_ACTIONS } from '@/constants/ws';
 import type { AppActions } from '@/types';
 import type { TOrder, TOrdersResponse } from '@/types/order';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
-export type TFeedState = {
+export type TProfileOrdersState = {
   orders: TOrder[];
   total: number;
   totalToday: number;
@@ -13,7 +13,7 @@ export type TFeedState = {
   error: string | null;
 };
 
-const initialState: TFeedState = {
+const initialState: TProfileOrdersState = {
   orders: [],
   total: 0,
   totalToday: 0,
@@ -21,15 +21,15 @@ const initialState: TFeedState = {
   error: null,
 };
 
-const feedSlice = createSlice({
-  name: 'feed',
+const profileOrdersSlice = createSlice({
+  name: 'profileOrders',
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
       .addMatcher(
         (action: AppActions): action is PayloadAction<Event> =>
-          action.type === FEED_WS_ACTIONS.INIT,
+          action.type === PROFILE_WS_ACTIONS.INIT,
         (state) => {
           state.status = 'connecting';
           state.error = null;
@@ -37,7 +37,7 @@ const feedSlice = createSlice({
       )
       .addMatcher(
         (action: AppActions): action is PayloadAction<Event> =>
-          action.type === FEED_WS_ACTIONS.OPEN,
+          action.type === PROFILE_WS_ACTIONS.OPEN,
         (state) => {
           state.status = 'online';
           state.error = null;
@@ -45,7 +45,7 @@ const feedSlice = createSlice({
       )
       .addMatcher(
         (action: AppActions): action is PayloadAction<ErrorEvent> =>
-          action.type === FEED_WS_ACTIONS.ERROR,
+          action.type === PROFILE_WS_ACTIONS.ERROR,
         (state, action) => {
           state.status = 'error';
           const payload = action.payload;
@@ -55,14 +55,14 @@ const feedSlice = createSlice({
       )
       .addMatcher(
         (action: AppActions): action is PayloadAction<CloseEvent> =>
-          action.type === FEED_WS_ACTIONS.CLOSED,
+          action.type === PROFILE_WS_ACTIONS.CLOSED,
         (state) => {
           state.status = 'offline';
         }
       )
       .addMatcher(
         (action: AppActions): action is PayloadAction<string> =>
-          action.type === FEED_WS_ACTIONS.MESSAGE,
+          action.type === PROFILE_WS_ACTIONS.MESSAGE,
         (state, action) => {
           try {
             const data = JSON.parse(action.payload) as TOrdersResponse;
@@ -86,4 +86,4 @@ const feedSlice = createSlice({
   },
 });
 
-export const feedReducer = feedSlice.reducer;
+export const profileOrdersReducer = profileOrdersSlice.reducer;

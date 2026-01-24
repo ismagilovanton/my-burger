@@ -1,128 +1,91 @@
 import { OrderCard } from '@/components/order-card/order-card';
+import { PROFILE_WS_ACTIONS } from '@/constants/ws';
+import { useAppDispatch, useAppSelector } from '@/hooks/redux';
+import { useEffect, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 import type { TIngredient } from '@/types/ingredient';
+import type { TOrder } from '@/types/order';
 import type React from 'react';
 
 import styles from './orders-page.module.css';
 
-type TMockOrder = {
+type TUiOrder = {
   number: number;
   name: string;
   createdAt: string;
-  status: 'done' | 'pending';
+  status: TOrder['status'];
   ingredients: TIngredient[];
   price: number;
 };
 
-const mockIngredients: TIngredient[] = [
-  {
-    _id: '1',
-    name: 'Space Sauce',
-    type: 'sauce',
-    proteins: 0,
-    fat: 0,
-    carbohydrates: 0,
-    calories: 0,
-    price: 80,
-    image: 'https://code.s3.yandex.net/react/code/sauce-03-large.png',
-    image_large: 'https://code.s3.yandex.net/react/code/sauce-03-large.png',
-    image_mobile: 'https://code.s3.yandex.net/react/code/sauce-03-large.png',
-    __v: 0,
-  },
-  {
-    _id: '2',
-    name: 'Lunar Bun',
-    type: 'bun',
-    proteins: 0,
-    fat: 0,
-    carbohydrates: 0,
-    calories: 0,
-    price: 120,
-    image: 'https://code.s3.yandex.net/react/code/bun-02-large.png',
-    image_large: 'https://code.s3.yandex.net/react/code/bun-02-large.png',
-    image_mobile: 'https://code.s3.yandex.net/react/code/bun-02-large.png',
-    __v: 0,
-  },
-  {
-    _id: '3',
-    name: 'Nebula Filling',
-    type: 'main',
-    proteins: 0,
-    fat: 0,
-    carbohydrates: 0,
-    calories: 0,
-    price: 60,
-    image: 'https://code.s3.yandex.net/react/code/meat-03-large.png',
-    image_large: 'https://code.s3.yandex.net/react/code/meat-03-large.png',
-    image_mobile: 'https://code.s3.yandex.net/react/code/meat-03-large.png',
-    __v: 0,
-  },
-  {
-    _id: '4',
-    name: 'Cosmic Cheese',
-    type: 'main',
-    proteins: 0,
-    fat: 0,
-    carbohydrates: 0,
-    calories: 0,
-    price: 40,
-    image: 'https://code.s3.yandex.net/react/code/cheese-large.png',
-    image_large: 'https://code.s3.yandex.net/react/code/cheese-large.png',
-    image_mobile: 'https://code.s3.yandex.net/react/code/cheese-large.png',
-    __v: 0,
-  },
-];
-
-const baseOrders: TMockOrder[] = [
-  {
-    number: 345535,
-    name: 'Death Star Starship Main бургер',
-    createdAt: 'Сегодня, 16:20',
-    status: 'done',
-    ingredients: mockIngredients,
-    price: 480,
-  },
-  {
-    number: 345534,
-    name: 'Interstellar бургер',
-    createdAt: 'Сегодня, 13:20',
-    status: 'pending',
-    ingredients: mockIngredients.slice(0, 3),
-    price: 560,
-  },
-  {
-    number: 345533,
-    name: 'Black Hole Singularity острый бургер',
-    createdAt: 'Вчера, 13:50',
-    status: 'done',
-    ingredients: mockIngredients,
-    price: 510,
-  },
-  {
-    number: 345532,
-    name: 'Supernova Infinity бургер',
-    createdAt: '2 дня назад, 21:53',
-    status: 'done',
-    ingredients: mockIngredients.slice(0, 2),
-    price: 370,
-  },
-];
-
-const mockOrders: TMockOrder[] = Array.from({ length: 12 }, (_, index) => {
-  const base = baseOrders[index % baseOrders.length];
-  return {
-    ...base,
-    number: base.number + index,
-  };
-});
-
 export const ProfileOrdersPage = (): React.JSX.Element => {
+  const dispatch = useAppDispatch();
   const location = useLocation();
+
+  const allIngredients = useAppSelector((state) => state.ingredients.items);
+  const orders = useAppSelector((state) => state.profileOrders.orders);
+
+  useEffect(() => {
+    dispatch({ type: PROFILE_WS_ACTIONS.INIT });
+
+    return (): void => {
+      dispatch({ type: PROFILE_WS_ACTIONS.CLOSE });
+    };
+  }, []);
+
+  const ingredientsById = useMemo<Map<string, TIngredient>>(() => {
+    const map = new Map<string, TIngredient>();
+    allIngredients.forEach((ingredient) => {
+      map.set(ingredient._id, ingredient);
+    });
+    return map;
+  }, [allIngredients]);
+
+  const uiOrders: TUiOrder[] = useMemo<TUiOrder[]>(() => {
+    return orders.map((order: TOrder) => {
+      const ingredients = order.ingredients
+        .map((id) => ingredientsById.get(id))
+        .filter((ingredient): ingredient is TIngredient => Boolean(ingredient));
+
+      const price = ingredients.reduce<number>(
+        (sum, ingredient) => sum + ingredient.price,
+        0
+      );
+
+      const createdAt = new Date(order.createdAt)
+        .toLocaleString('ru-RU', {
+          hour: '2-digit',
+          minute: '2-digit',
+        })
+        .toString();
+
+      return {
+        number: Number(order.number),
+        name: order.name,
+        createdAt,
+        status: order.status,
+        ingredients,
+        price,
+      };
+    });
+  }, [orders, ingredientsById]);
+
+  const getStatusText = (status: TOrder['status']): string => {
+    switch (status) {
+      case 'done':
+        return 'Выполнен';
+      case 'pending':
+      case 'created':
+        return 'Готовится';
+      default:
+        return 'Отменён';
+    }
+  };
 
   return (
     <section className={styles.page}>
-      {mockOrders.map((order) => (
+      {uiOrders.map((order) => (
         <Link
           key={order.number}
           to={`/profile/orders/${order.number}`}
@@ -135,7 +98,7 @@ export const ProfileOrdersPage = (): React.JSX.Element => {
             createdAt={order.createdAt}
             price={order.price}
             ingredients={order.ingredients}
-            statusText={order.status === 'done' ? 'Выполнен' : 'Готовится'}
+            statusText={getStatusText(order.status)}
           />
         </Link>
       ))}

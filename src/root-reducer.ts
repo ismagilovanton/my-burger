@@ -4,11 +4,13 @@ import { currentIngredientReducer } from '@/services/current-ingredient/currentI
 import { feedReducer } from '@/services/feed/feedSlice';
 import { ingredientsReducer } from '@/services/ingredients/ingredientsSlice';
 import { orderReducer } from '@/services/order/orderSlice';
+import { profileOrdersReducer } from '@/services/profile-orders/profileOrdersSlice';
 import { combineReducers } from '@reduxjs/toolkit';
 
 export const rootReducer = combineReducers({
   ingredients: ingredientsReducer,
   feed: feedReducer,
+  profileOrders: profileOrdersReducer,
   burgerConstructor: burgerConstructorReducer,
   currentIngredient: currentIngredientReducer,
   order: orderReducer,
