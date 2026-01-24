@@ -45,7 +45,7 @@ export const OrderCard = ({
               const restCount = ingredients.length - 4;
               return (
                 <div
-                  key={ingredient._id}
+                  key={`${ingredient._id}-${index}-more`}
                   className={`${styles.ingredientAvatar} ${styles.ingredientMore}`}
                 >
                   <span className="text text_type_main-default">+{restCount}</span>
@@ -54,7 +54,10 @@ export const OrderCard = ({
             }
 
             return (
-              <div key={ingredient._id} className={styles.ingredientAvatar}>
+              <div
+                key={`${ingredient._id}-${index}`}
+                className={styles.ingredientAvatar}
+              >
                 <img
                   src={ingredient.image}
                   alt={ingredient.name}
