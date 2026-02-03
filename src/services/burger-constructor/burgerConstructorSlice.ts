@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { v4 as uuidv4 } from 'uuid';
 
-import type { TIngredient } from '@/utils/types';
+import type { TIngredient } from '@/types/ingredient';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
 export type TBurgerConstructorItem = TIngredient & {
