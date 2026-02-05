@@ -1,6 +1,6 @@
 const { afterEach, beforeEach, describe, expect, it } = require('@jest/globals');
 const configureMockStore = require('redux-mock-store').default;
-const thunk = require('redux-thunk');
+const { thunk } = require('redux-thunk');
 
 const { createOrder } = require('./orderSlice');
 
