@@ -1,6 +1,6 @@
+import { FEED_WS_ACTIONS } from '@/constants/ws';
 import { createSlice } from '@reduxjs/toolkit';
 
-import { FEED_WS_ACTIONS } from '@/constants/ws';
 import type { AppActions } from '@/types';
 import type { TOrder, TOrdersResponse } from '@/types/order';
 import type { PayloadAction } from '@reduxjs/toolkit';
@@ -13,7 +13,7 @@ export type TFeedState = {
   error: string | null;
 };
 
-const initialState: TFeedState = {
+export const initialState: TFeedState = {
   orders: [],
   total: 0,
   totalToday: 0,
