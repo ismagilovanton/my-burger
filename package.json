@@ -18,8 +18,10 @@
     "prettier": "prettier \"./src/**/*.{js,jsx,ts,tsx,json,html,css,md}\" --write",
     "preview": "vite preview",
     "stylelint": "stylelint \"./src/**/*.css\" --fix",
-    "test": "vitest",
-    "test:ui": "vitest --ui"
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "deploy-script": "npm run build && scp -r -i ~/.ssh/echo-runner ./dist/* antonismagilov@158.160.210.35:/home/antonismagilov/my-burger-frontend"
   },
   "dependencies": {
     "@babel/runtime": "^7.27.6",
@@ -39,7 +41,10 @@
     "uuid": "^13.0.0"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.29.0",
+    "@babel/preset-typescript": "^7.28.5",
     "@eslint/js": "^9.29.0",
+    "@jest/globals": "^30.2.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
@@ -48,6 +53,7 @@
     "@vitejs/plugin-react": "^4.5.2",
     "@vitest/browser": "^3.2.3",
     "@vitest/ui": "^3.2.3",
+    "babel-jest": "^30.2.0",
     "commitizen": "^4.3.1",
     "cypress": "^14.4.1",
     "cypress-vite": "^1.6.0",
@@ -63,12 +69,16 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "eslint-plugin-unused-imports": "^4.1.4",
+    "fetch-mock": "^12.6.0",
     "gh-pages": "^6.3.0",
     "globals": "^16.2.0",
     "husky": "^9.1.7",
+    "jest": "^30.2.0",
+    "jest-environment-jsdom": "^30.2.0",
     "jsdom": "^26.1.0",
     "lint-staged": "^16.1.2",
     "prettier": "^3.5.3",
+    "redux-mock-store": "^1.5.5",
     "stylelint": "^16.20.0",
     "stylelint-config-standard": "^38.0.0",
     "stylelint-order": "^7.0.0",
