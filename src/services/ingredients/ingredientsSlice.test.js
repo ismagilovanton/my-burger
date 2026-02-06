@@ -1,51 +1,24 @@
 import { describe, expect, it } from '@jest/globals';
 
 import {
+  MOCK_BUN,
+  MOCK_MAIN,
+  ERROR_MESSAGES,
+} from '../../test-fixtures/mock-data';
+import {
   clearIngredients,
   fetchIngredients,
   ingredientsReducer,
+  initialState,
   setIngredients,
 } from './ingredientsSlice';
 
 describe('ingredientsReducer', () => {
-  const mockIngredients = [
-    {
-      _id: 'ingredient-1',
-      name: 'Краторная булка N-200i',
-      type: 'bun',
-      proteins: 80,
-      fat: 24,
-      carbohydrates: 53,
-      calories: 420,
-      price: 1255,
-      image: 'https://example.com/bun.png',
-      image_mobile: 'https://example.com/bun-mobile.png',
-      image_large: 'https://example.com/bun-large.png',
-      __v: 0,
-    },
-    {
-      _id: 'ingredient-2',
-      name: 'Говяжий метеорит',
-      type: 'main',
-      proteins: 800,
-      fat: 800,
-      carbohydrates: 300,
-      calories: 2674,
-      price: 3000,
-      image: 'https://example.com/meat.png',
-      image_mobile: 'https://example.com/meat-mobile.png',
-      image_large: 'https://example.com/meat-large.png',
-      __v: 0,
-    },
-  ];
+  const mockIngredients = [MOCK_BUN, MOCK_MAIN];
 
   it('должен возвращать начальное состояние', () => {
     const state = ingredientsReducer(undefined, { type: 'unknown' });
-    expect(state).toEqual({
-      items: [],
-      status: 'idle',
-      error: null,
-    });
+    expect(state).toEqual(initialState);
   });
 
   describe('setIngredients', () => {
@@ -57,20 +30,20 @@ describe('ingredientsReducer', () => {
     });
 
     it('должен заменять существующие ингредиенты', () => {
-      const initialState = {
+      const stateWithItems = {
+        ...initialState,
         items: mockIngredients,
         status: 'succeeded',
-        error: null,
       };
       const newIngredients = [
         {
-          ...mockIngredients[0],
+          ...MOCK_BUN,
           _id: 'ingredient-3',
           name: 'Новый ингредиент',
         },
       ];
       const action = setIngredients(newIngredients);
-      const state = ingredientsReducer(initialState, action);
+      const state = ingredientsReducer(stateWithItems, action);
       expect(state.items).toEqual(newIngredients);
       expect(state.items).toHaveLength(1);
     });
@@ -78,22 +51,17 @@ describe('ingredientsReducer', () => {
 
   describe('clearIngredients', () => {
     it('должен очищать список ингредиентов', () => {
-      const initialState = {
+      const stateWithItems = {
+        ...initialState,
         items: mockIngredients,
         status: 'succeeded',
-        error: null,
       };
       const action = clearIngredients();
-      const state = ingredientsReducer(initialState, action);
+      const state = ingredientsReducer(stateWithItems, action);
       expect(state.items).toEqual([]);
     });
 
     it('должен работать с пустым массивом', () => {
-      const initialState = {
-        items: [],
-        status: 'idle',
-        error: null,
-      };
       const action = clearIngredients();
       const state = ingredientsReducer(initialState, action);
       expect(state.items).toEqual([]);
@@ -120,14 +88,13 @@ describe('ingredientsReducer', () => {
     });
 
     it('должен обрабатывать rejected состояние с error.message', () => {
-      const errorMessage = 'Failed to fetch ingredients';
       const action = {
         type: fetchIngredients.rejected.type,
-        error: { message: errorMessage },
+        error: { message: ERROR_MESSAGES.FETCH_INGREDIENTS_FAILED },
       };
       const state = ingredientsReducer(undefined, action);
       expect(state.status).toBe('failed');
-      expect(state.error).toBe(errorMessage);
+      expect(state.error).toBe(ERROR_MESSAGES.FETCH_INGREDIENTS_FAILED);
     });
 
     it('должен обрабатывать rejected состояние без сообщения', () => {
@@ -141,4 +108,3 @@ describe('ingredientsReducer', () => {
     });
   });
 });
-

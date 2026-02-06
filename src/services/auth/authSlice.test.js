@@ -1,9 +1,15 @@
 import { describe, expect, it } from '@jest/globals';
 
 import {
+  MOCK_USER,
+  MOCK_USER_UPDATED,
+  ERROR_MESSAGES,
+} from '../../test-fixtures/mock-data';
+import {
   authReducer,
   clearUser,
   fetchUser,
+  initialState,
   loginUser,
   logoutUser,
   registerUser,
@@ -12,36 +18,26 @@ import {
 } from './authSlice';
 
 describe('authReducer', () => {
-  const mockUser = {
-    email: 'test@example.com',
-    name: 'Test User',
-  };
-
   it('должен возвращать начальное состояние', () => {
     const state = authReducer(undefined, { type: 'unknown' });
-    expect(state).toEqual({
-      user: null,
-      isAuthChecked: false,
-      status: 'idle',
-      error: null,
-    });
+    expect(state).toEqual(initialState);
   });
 
   describe('setUser', () => {
     it('должен устанавливать пользователя и isAuthChecked в true', () => {
-      const state = authReducer(undefined, setUser(mockUser));
-      expect(state.user).toEqual(mockUser);
+      const state = authReducer(undefined, setUser(MOCK_USER));
+      expect(state.user).toEqual(MOCK_USER);
       expect(state.isAuthChecked).toBe(true);
     });
 
     it('должен устанавливать null при очистке пользователя', () => {
-      const initialState = {
-        user: mockUser,
+      const stateWithUser = {
+        ...initialState,
+        user: MOCK_USER,
         isAuthChecked: true,
         status: 'succeeded',
-        error: null,
       };
-      const state = authReducer(initialState, setUser(null));
+      const state = authReducer(stateWithUser, setUser(null));
       expect(state.user).toBeNull();
       expect(state.isAuthChecked).toBe(true);
     });
@@ -49,13 +45,13 @@ describe('authReducer', () => {
 
   describe('clearUser', () => {
     it('должен очищать пользователя и устанавливать isAuthChecked в true', () => {
-      const initialState = {
-        user: mockUser,
+      const stateWithUser = {
+        ...initialState,
+        user: MOCK_USER,
         isAuthChecked: true,
         status: 'succeeded',
-        error: null,
       };
-      const state = authReducer(initialState, clearUser());
+      const state = authReducer(stateWithUser, clearUser());
       expect(state.user).toBeNull();
       expect(state.isAuthChecked).toBe(true);
     });
@@ -72,33 +68,32 @@ describe('authReducer', () => {
     it('должен обрабатывать fulfilled состояние', () => {
       const action = {
         type: registerUser.fulfilled.type,
-        payload: mockUser,
+        payload: MOCK_USER,
       };
       const state = authReducer(undefined, action);
-      expect(state.user).toEqual(mockUser);
+      expect(state.user).toEqual(MOCK_USER);
       expect(state.status).toBe('succeeded');
       expect(state.isAuthChecked).toBe(true);
     });
 
     it('должен обрабатывать rejected состояние с payload', () => {
-      const errorMessage = 'Registration failed';
       const action = {
         type: registerUser.rejected.type,
-        payload: errorMessage,
+        payload: ERROR_MESSAGES.REGISTRATION_FAILED,
       };
       const state = authReducer(undefined, action);
       expect(state.status).toBe('failed');
-      expect(state.error).toBe(errorMessage);
+      expect(state.error).toBe(ERROR_MESSAGES.REGISTRATION_FAILED);
     });
 
     it('должен обрабатывать rejected состояние с error.message', () => {
       const action = {
         type: registerUser.rejected.type,
-        error: { message: 'Network error' },
+        error: { message: ERROR_MESSAGES.NETWORK_ERROR },
       };
       const state = authReducer(undefined, action);
       expect(state.status).toBe('failed');
-      expect(state.error).toBe('Network error');
+      expect(state.error).toBe(ERROR_MESSAGES.NETWORK_ERROR);
     });
 
     it('должен обрабатывать rejected состояние без сообщения', () => {
@@ -123,33 +118,32 @@ describe('authReducer', () => {
     it('должен обрабатывать fulfilled состояние', () => {
       const action = {
         type: loginUser.fulfilled.type,
-        payload: mockUser,
+        payload: MOCK_USER,
       };
       const state = authReducer(undefined, action);
-      expect(state.user).toEqual(mockUser);
+      expect(state.user).toEqual(MOCK_USER);
       expect(state.status).toBe('succeeded');
       expect(state.isAuthChecked).toBe(true);
     });
 
     it('должен обрабатывать rejected состояние с payload', () => {
-      const errorMessage = 'Login failed';
       const action = {
         type: loginUser.rejected.type,
-        payload: errorMessage,
+        payload: ERROR_MESSAGES.LOGIN_FAILED,
       };
       const state = authReducer(undefined, action);
       expect(state.status).toBe('failed');
-      expect(state.error).toBe(errorMessage);
+      expect(state.error).toBe(ERROR_MESSAGES.LOGIN_FAILED);
     });
 
     it('должен обрабатывать rejected состояние с error.message', () => {
       const action = {
         type: loginUser.rejected.type,
-        error: { message: 'Invalid credentials' },
+        error: { message: ERROR_MESSAGES.INVALID_CREDENTIALS },
       };
       const state = authReducer(undefined, action);
       expect(state.status).toBe('failed');
-      expect(state.error).toBe('Invalid credentials');
+      expect(state.error).toBe(ERROR_MESSAGES.INVALID_CREDENTIALS);
     });
 
     it('должен обрабатывать rejected состояние без сообщения', () => {
@@ -172,28 +166,27 @@ describe('authReducer', () => {
     });
 
     it('должен обрабатывать fulfilled состояние', () => {
-      const initialState = {
-        user: mockUser,
+      const stateWithUser = {
+        ...initialState,
+        user: MOCK_USER,
         isAuthChecked: true,
         status: 'succeeded',
-        error: null,
       };
       const action = { type: logoutUser.fulfilled.type };
-      const state = authReducer(initialState, action);
+      const state = authReducer(stateWithUser, action);
       expect(state.user).toBeNull();
       expect(state.status).toBe('succeeded');
       expect(state.isAuthChecked).toBe(true);
     });
 
     it('должен обрабатывать rejected состояние', () => {
-      const errorMessage = 'Logout failed';
       const action = {
         type: logoutUser.rejected.type,
-        payload: errorMessage,
+        payload: ERROR_MESSAGES.LOGOUT_FAILED,
       };
       const state = authReducer(undefined, action);
       expect(state.status).toBe('failed');
-      expect(state.error).toBe(errorMessage);
+      expect(state.error).toBe(ERROR_MESSAGES.LOGOUT_FAILED);
     });
   });
 
@@ -208,23 +201,22 @@ describe('authReducer', () => {
     it('должен обрабатывать fulfilled состояние', () => {
       const action = {
         type: fetchUser.fulfilled.type,
-        payload: mockUser,
+        payload: MOCK_USER,
       };
       const state = authReducer(undefined, action);
-      expect(state.user).toEqual(mockUser);
+      expect(state.user).toEqual(MOCK_USER);
       expect(state.status).toBe('succeeded');
       expect(state.isAuthChecked).toBe(true);
     });
 
     it('должен обрабатывать rejected состояние и устанавливать isAuthChecked в true', () => {
-      const errorMessage = 'Failed to fetch user';
       const action = {
         type: fetchUser.rejected.type,
-        payload: errorMessage,
+        payload: ERROR_MESSAGES.FETCH_USER_FAILED,
       };
       const state = authReducer(undefined, action);
       expect(state.status).toBe('failed');
-      expect(state.error).toBe(errorMessage);
+      expect(state.error).toBe(ERROR_MESSAGES.FETCH_USER_FAILED);
       expect(state.isAuthChecked).toBe(true);
     });
   });
@@ -238,30 +230,24 @@ describe('authReducer', () => {
     });
 
     it('должен обрабатывать fulfilled состояние', () => {
-      const updatedUser = {
-        email: 'updated@example.com',
-        name: 'Updated User',
-      };
       const action = {
         type: updateUser.fulfilled.type,
-        payload: updatedUser,
+        payload: MOCK_USER_UPDATED,
       };
       const state = authReducer(undefined, action);
-      expect(state.user).toEqual(updatedUser);
+      expect(state.user).toEqual(MOCK_USER_UPDATED);
       expect(state.status).toBe('succeeded');
       expect(state.isAuthChecked).toBe(true);
     });
 
     it('должен обрабатывать rejected состояние', () => {
-      const errorMessage = 'Failed to update user';
       const action = {
         type: updateUser.rejected.type,
-        payload: errorMessage,
+        payload: ERROR_MESSAGES.UPDATE_USER_FAILED,
       };
       const state = authReducer(undefined, action);
       expect(state.status).toBe('failed');
-      expect(state.error).toBe(errorMessage);
+      expect(state.error).toBe(ERROR_MESSAGES.UPDATE_USER_FAILED);
     });
   });
 });
-
