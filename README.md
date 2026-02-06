@@ -36,3 +36,7 @@
 		'@utils': path.resolve(__dirname, './src/utils'),
 	},
 ```
+
+**Ссылка на проект**
+
+https://my-burger.nomorepartiessbs.ru/
